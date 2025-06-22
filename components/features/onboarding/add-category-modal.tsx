@@ -6,7 +6,7 @@ import { useState } from "react"
 import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import type { BudgetCategory } from "./budget-onboarding"
+import { BudgetCategory } from "@/types/budget"
 
 interface AddCategoryModalProps {
   onClose: () => void
@@ -28,18 +28,18 @@ const categoryColors = [
 export function AddCategoryModal({ onClose, onAdd, availableAmount }: AddCategoryModalProps) {
   const [formData, setFormData] = useState({
     name: "",
-    amount: "",
+    allocated_amount: "",
     color: categoryColors[0],
   })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const amount = Number.parseFloat(formData.amount)
+    const allocated_amount = Number.parseFloat(formData.allocated_amount)
 
-    if (formData.name && formData.amount && amount <= availableAmount) {
+    if (formData.name && formData.allocated_amount && allocated_amount <= availableAmount && allocated_amount > 0) {
       onAdd({
         name: formData.name,
-        amount: amount,
+        allocated_amount: allocated_amount,
         color: formData.color,
       })
       onClose()
@@ -51,6 +51,7 @@ export function AddCategoryModal({ onClose, onAdd, availableAmount }: AddCategor
   }
 
   const maxAmount = Math.max(0, availableAmount)
+  const amountValue = Number.parseFloat(formData.allocated_amount) || 0
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end justify-center z-50">
@@ -79,14 +80,20 @@ export function AddCategoryModal({ onClose, onAdd, availableAmount }: AddCategor
               type="number"
               step="0.01"
               max={maxAmount}
-              value={formData.amount}
-              onChange={handleChange("amount")}
+              min="0.01"
+              value={formData.allocated_amount}
+              onChange={handleChange("allocated_amount")}
               placeholder="0,00"
               required
             />
             <p className="text-sm text-[#7F8C8D] mt-1">
               Disponível: R$ {availableAmount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
             </p>
+            {amountValue > availableAmount && (
+              <p className="text-sm text-red-500 mt-1">
+                Valor não pode ser maior que o disponível
+              </p>
+            )}
           </div>
 
           <div>
@@ -110,7 +117,11 @@ export function AddCategoryModal({ onClose, onAdd, availableAmount }: AddCategor
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">
               Cancelar
             </Button>
-            <Button type="submit" className="flex-1">
+            <Button 
+              type="submit" 
+              className="flex-1"
+              disabled={!formData.name || !formData.allocated_amount || amountValue <= 0 || amountValue > availableAmount}
+            >
               Adicionar
             </Button>
           </div>

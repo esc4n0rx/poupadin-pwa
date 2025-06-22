@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { StepHeader } from "./step-header"
-import type { Income, BudgetCategory } from "@/types/budget"
+import { Income, BudgetCategory } from "@/types/budget"
 
 interface ReviewBudgetStepProps {
   incomes: Income[]

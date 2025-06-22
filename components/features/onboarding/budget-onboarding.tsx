@@ -123,6 +123,7 @@ export function BudgetOnboarding() {
           totalAllocated={totalAllocated}
           onBack={() => setCurrentStep(2)}
           onFinish={handleFinishSetup}
+          loading={loading}
         />
       )
     default:

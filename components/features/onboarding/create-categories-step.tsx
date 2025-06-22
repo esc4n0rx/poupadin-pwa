@@ -5,7 +5,7 @@ import { Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { StepHeader } from "./step-header"
 import { AddCategoryModal } from "./add-category-modal"
-import type { BudgetCategory } from "./budget-onboarding"
+import { BudgetCategory } from "@/types/budget"
 
 interface CreateCategoriesStepProps {
   categories: BudgetCategory[]
@@ -78,7 +78,7 @@ export function CreateCategoriesStep({
                     <h3 className="font-semibold text-[#2C3E50]">{category.name}</h3>
                   </div>
                   <p className="text-xl font-bold text-[#1DD1A1]">
-                    R$ {category.amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                    R$ {category.allocated_amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                   </p>
                 </div>
               </div>
