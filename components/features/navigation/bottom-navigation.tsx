@@ -1,3 +1,4 @@
+// components/features/navigation/bottom-navigation.tsx
 "use client"
 
 import { Home, BarChart3, Target, Grid3X3, User } from "lucide-react"
@@ -8,7 +9,7 @@ import { cn } from "@/lib/utils"
 const navigationItems = [
   { href: "/dashboard", icon: Home, label: "Início" },
   { href: "/analytics", icon: BarChart3, label: "Objetivos" },
-  { href: "/goals", icon: Target, label: "" },
+  { href: "/center", icon: Target, label: "" }, // Nova rota central
   { href: "/categories", icon: Grid3X3, label: "Categorias" },
   { href: "/profile", icon: User, label: "Perfil" },
 ]
@@ -21,7 +22,7 @@ export function BottomNavigation() {
       <div className="flex items-center justify-between">
         {navigationItems.map((item) => {
           const isActive = pathname === item.href
-          const isCenter = item.href === "/goals"
+          const isCenter = item.href === "/center"
 
           if (isCenter) {
             return (
