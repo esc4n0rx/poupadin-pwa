@@ -9,6 +9,8 @@ import { useAuth } from "@/contexts/auth-context"
 import { BudgetApi } from "@/lib/budget-api"
 import { Income, BudgetCategory } from "@/types/budget"
 
+export { type Income, type BudgetCategory }
+
 export function BudgetOnboarding() {
   const [currentStep, setCurrentStep] = useState(1)
   const [incomes, setIncomes] = useState<Income[]>([])
@@ -37,27 +39,67 @@ export function BudgetOnboarding() {
     setBudgetCategories((prev) => [...prev, newCategory])
   }
 
+  const validateData = () => {
+    // Validar incomes
+    for (const income of incomes) {
+      if (!income.description || income.description.trim().length < 3) {
+        throw new Error("Descrição da renda deve ter pelo menos 3 caracteres")
+      }
+      if (!income.amount || income.amount <= 0) {
+        throw new Error("Valor da renda deve ser positivo")
+      }
+      if (!income.receive_day || income.receive_day < 1 || income.receive_day > 31) {
+        throw new Error("Dia de recebimento deve estar entre 1 e 31")
+      }
+    }
+
+    // Validar categorias
+    for (const category of budgetCategories) {
+      if (!category.name || category.name.trim().length < 2) {
+        throw new Error("Nome da categoria deve ter pelo menos 2 caracteres")
+      }
+      if (category.allocated_amount < 0) {
+        throw new Error("Valor alocado deve ser positivo ou zero")
+      }
+    }
+
+    if (incomes.length === 0) {
+      throw new Error("Pelo menos uma renda deve ser adicionada")
+    }
+
+    if (budgetCategories.length === 0) {
+      throw new Error("Pelo menos uma categoria deve ser adicionada")
+    }
+  }
+
   const handleFinishSetup = async () => {
     setLoading(true)
     setError("")
 
     try {
-      // Preparar dados para o backend
+      // Validar dados antes de enviar
+      validateData()
+
+      // Preparar dados exatamente como a API espera
       const budgetData = {
         incomes: incomes.map(income => ({
-          description: income.description,
-          amount: income.amount,
-          receive_day: income.receive_day
+          description: income.description.trim(),
+          amount: Number(income.amount),
+          receive_day: Number(income.receive_day)
         })),
         categories: budgetCategories.map(category => ({
-          name: category.name,
-          allocated_amount: category.allocated_amount,
+          name: category.name.trim(),
+          allocated_amount: Number(category.allocated_amount),
           color: category.color
         }))
       }
 
+      console.log("Dados sendo enviados para a API:", budgetData)
+
       // Enviar para o backend
-      await BudgetApi.createInitialBudget(budgetData)
+      const response = await BudgetApi.createInitialBudget(budgetData)
+      
+      console.log("Resposta da API:", response)
 
       // Atualizar o status do usuário
       updateUser({ initial_setup_completed: true })
@@ -66,7 +108,11 @@ export function BudgetOnboarding() {
       router.push("/dashboard")
     } catch (error) {
       console.error("Erro ao criar orçamento:", error)
-      setError(error instanceof Error ? error.message : "Erro ao finalizar setup")
+      if (error instanceof Error) {
+        setError(error.message)
+      } else {
+        setError("Erro inesperado ao finalizar setup")
+      }
     } finally {
       setLoading(false)
     }

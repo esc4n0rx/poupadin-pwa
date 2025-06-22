@@ -1,21 +1,29 @@
 export interface Income {
-  id?: string
+  id: string
   description: string
   amount: number
   receive_day: number
 }
 
 export interface BudgetCategory {
-  id?: string
+  id: string
   name: string
   allocated_amount: number
-  color?: string
+  color: string
 }
 
 export interface BudgetSetupRequest {
   name?: string
-  incomes: Income[]
-  categories: BudgetCategory[]
+  incomes: {
+    description: string
+    amount: number
+    receive_day: number
+  }[]
+  categories: {
+    name: string
+    allocated_amount: number
+    color?: string
+  }[]
 }
 
 export interface BudgetSetupResponse {
