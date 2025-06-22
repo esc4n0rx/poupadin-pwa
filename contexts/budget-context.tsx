@@ -39,7 +39,6 @@ interface BudgetContextType {
   addTransaction: (transaction: Omit<Transaction, "id">) => void
   addGoal: (goal: Omit<Goal, "id">) => void
   addCategory: (category: Omit<Category, "id">) => void
-  completeBudgetSetup: (incomes: any[], budgetCategories: any[]) => void
 }
 
 const BudgetContext = createContext<BudgetContextType | undefined>(undefined)
@@ -60,100 +59,74 @@ export function BudgetProvider({ children }: { children: ReactNode }) {
     {
       id: "1",
       name: "Carro novo",
-      description: "Economizar para comprar um carro novo",
+      description: "Economizar para comprar um carro novo carro novo",
       targetAmount: 30000,
       currentAmount: 5000,
       color: "#8B5CF6",
-    },
-  ])
-
+      },
+])
   const [categories, setCategories] = useState<Category[]>([
-    {
-      id: "1",
-      name: "Alimentação",
-      budgetAmount: 800,
-      currentAmount: 450,
-      color: "#EF4444",
-      icon: "🍽️",
-    },
-    {
-      id: "2",
-      name: "Transporte",
-      budgetAmount: 400,
-      currentAmount: 120,
-      color: "#3B82F6",
-      icon: "🚗",
-    },
+  {
+  id: "1",
+  name: "Alimentação",
+  budgetAmount: 800,
+  currentAmount: 450,
+  color: "#EF4444",
+  icon: "🍽️",
+  },
+  {
+  id: "2",
+  name: "Transporte",
+  budgetAmount: 400,
+  currentAmount: 120,
+  color: "#3B82F6",
+  icon: "🚗",
+  },
   ])
-
   const totalIncome = transactions.filter((t) => t.type === "income").reduce((sum, t) => sum + t.amount, 500) // Mock income
-
   const totalExpenses = Math.abs(transactions.filter((t) => t.type === "expense").reduce((sum, t) => sum + t.amount, 0))
-
   const addTransaction = (transaction: Omit<Transaction, "id">) => {
-    const newTransaction = {
-      ...transaction,
-      id: Date.now().toString(),
-    }
-    setTransactions((prev) => [newTransaction, ...prev])
+  const newTransaction = {
+  ...transaction,
+  id: Date.now().toString(),
   }
-
+  setTransactions((prev) => [newTransaction, ...prev])
+  }
   const addGoal = (goal: Omit<Goal, "id">) => {
-    const newGoal = {
-      ...goal,
-      id: Date.now().toString(),
-    }
-    setGoals((prev) => [...prev, newGoal])
+  const newGoal = {
+  ...goal,
+  id: Date.now().toString(),
   }
-
+  setGoals((prev) => [...prev, newGoal])
+  }
   const addCategory = (category: Omit<Category, "id">) => {
-    const newCategory = {
-      ...category,
-      id: Date.now().toString(),
-    }
-    setCategories((prev) => [...prev, newCategory])
+  const newCategory = {
+  ...category,
+  id: Date.now().toString(),
   }
-
-  const completeBudgetSetup = (incomes: any[], budgetCategories: any[]) => {
-    // Convert budget categories to our category format
-    const newCategories = budgetCategories.map((cat) => ({
-      id: cat.id,
-      name: cat.name,
-      budgetAmount: cat.amount,
-      currentAmount: 0,
-      color: cat.color,
-      icon: "💰",
-    }))
-
-    setCategories(newCategories)
-
-    // Store setup completion in localStorage
-    localStorage.setItem("poupadin-budget-setup", "completed")
+  setCategories((prev) => [...prev, newCategory])
   }
-
   return (
-    <BudgetContext.Provider
-      value={{
-        transactions,
-        goals,
-        categories,
-        totalIncome,
-        totalExpenses,
-        addTransaction,
-        addGoal,
-        addCategory,
-        completeBudgetSetup,
-      }}
-    >
-      {children}
-    </BudgetContext.Provider>
+  <BudgetContext.Provider
+  value={{
+  transactions,
+  goals,
+  categories,
+  totalIncome,
+  totalExpenses,
+  addTransaction,
+  addGoal,
+  addCategory,
+  }}
+  >
+  {children}
+  </BudgetContext.Provider>
   )
-}
-
-export function useBudget() {
+  }
+  export function useBudget() {
   const context = useContext(BudgetContext)
   if (context === undefined) {
-    throw new Error("useBudget must be used within a BudgetProvider")
+  throw new Error("useBudget must be used within a BudgetProvider")
   }
   return context
-}
+  }

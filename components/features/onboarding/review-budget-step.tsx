@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { StepHeader } from "./step-header"
-import type { Income, BudgetCategory } from "./budget-onboarding"
+import type { Income, BudgetCategory } from "@/types/budget"
 
 interface ReviewBudgetStepProps {
   incomes: Income[]
@@ -11,6 +11,7 @@ interface ReviewBudgetStepProps {
   totalAllocated: number
   onBack: () => void
   onFinish: () => void
+  loading?: boolean
 }
 
 export function ReviewBudgetStep({
@@ -20,6 +21,7 @@ export function ReviewBudgetStep({
   totalAllocated,
   onBack,
   onFinish,
+  loading = false,
 }: ReviewBudgetStepProps) {
   const remaining = totalIncome - totalAllocated
 
@@ -46,7 +48,7 @@ export function ReviewBudgetStep({
                     <span className="font-medium text-[#2C3E50]">{category.name}</span>
                   </div>
                   <span className="font-bold text-[#1DD1A1]">
-                    R$ {category.amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                    R$ {category.allocated_amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                   </span>
                 </div>
               </div>
@@ -79,10 +81,10 @@ export function ReviewBudgetStep({
         </div>
 
         <div className="fixed bottom-6 left-6 right-6 flex space-x-4">
-          <Button variant="outline" onClick={onBack} className="flex-1 border-[#1DD1A1] text-[#1DD1A1]">
+          <Button variant="outline" onClick={onBack} className="flex-1 border-[#1DD1A1] text-[#1DD1A1]" disabled={loading}>
             Voltar
           </Button>
-          <Button onClick={onFinish} className="flex-1 bg-[#1DD1A1] text-white">
+          <Button onClick={onFinish} className="flex-1 bg-[#1DD1A1] text-white" loading={loading}>
             Finalizar Setup
           </Button>
         </div>

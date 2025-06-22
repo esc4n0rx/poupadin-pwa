@@ -100,7 +100,14 @@ export function RegisterForm() {
       console.log('Dados enviados para registro:', registerData) // Para debug
 
       await register(registerData)
-      router.push("/onboarding")
+      
+      // Aguardar um pouco para garantir que o contexto foi atualizado
+      setTimeout(() => {
+        // Após registro e login automático, sempre vai para onboarding
+        // pois initial_setup_completed será false para novos usuários
+        router.push("/onboarding")
+      }, 100)
+
     } catch (error) {
       console.error("Erro no registro:", error)
       setError(error instanceof Error ? error.message : "Erro no registro")

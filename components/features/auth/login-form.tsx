@@ -34,14 +34,19 @@ export function LoginForm() {
     try {
       await login(formData)
 
-      // Check if budget setup is completed
-      const budgetSetupCompleted = localStorage.getItem("poupadin-budget-setup")
+      // Aguardar um pouco para garantir que o contexto foi atualizado
+      setTimeout(() => {
+        // Buscar o usuário atualizado do contexto
+        const userData = JSON.parse(localStorage.getItem('poupadin_user_data') || '{}')
+        
+        // Verificar se o setup inicial foi completado
+        if (userData.initial_setup_completed) {
+          router.push("/dashboard")
+        } else {
+          router.push("/onboarding")
+        }
+      }, 100)
 
-      if (budgetSetupCompleted === "completed") {
-        router.push("/dashboard")
-      } else {
-        router.push("/onboarding")
-      }
     } catch (error) {
       console.error("Erro no login:", error)
       setError(error instanceof Error ? error.message : "Erro no login")
