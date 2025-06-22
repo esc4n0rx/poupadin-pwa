@@ -14,33 +14,96 @@ export function RegisterForm() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    birthDate: "",
+    date_of_birth: "",
     password: "",
     confirmPassword: "",
   })
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
   const { register } = useAuth()
   const router = useRouter()
 
-  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (field: keyof typeof formData) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [field]: e.target.value }))
+    // Limpar erro quando usuário começar a digitar
+    if (error) setError("")
+  }
+
+  const validateForm = (): string | null => {
+    if (formData.name.trim().length < 3) {
+      return "O nome deve ter pelo menos 3 caracteres"
+    }
+
+    if (!formData.email.trim()) {
+      return "Email é obrigatório"
+    }
+
+    // Validar email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formData.email)) {
+      return "Email deve ser válido"
+    }
+
+    if (!formData.date_of_birth) {
+      return "Data de nascimento é obrigatória"
+    }
+
+    // Validar se a data está no formato correto (YYYY-MM-DD)
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/
+    if (!dateRegex.test(formData.date_of_birth)) {
+      return "Data de nascimento deve estar no formato correto"
+    }
+
+    // Validar se a pessoa tem pelo menos 13 anos
+    const birthDate = new Date(formData.date_of_birth)
+    const today = new Date()
+    const age = today.getFullYear() - birthDate.getFullYear()
+    const monthDiff = today.getMonth() - birthDate.getMonth()
+    
+    if (age < 13 || (age === 13 && monthDiff < 0) || (age === 13 && monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      return "Você deve ter pelo menos 13 anos"
+    }
+
+    if (formData.password.length < 8) {
+      return "A senha deve ter pelo menos 8 caracteres"
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      return "As senhas não coincidem"
+    }
+
+    return null
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError("")
 
-    if (formData.password !== formData.confirmPassword) {
-      alert("As senhas não coincidem")
+    // Validar formulário
+    const validationError = validateForm()
+    if (validationError) {
+      setError(validationError)
       return
     }
 
     setLoading(true)
 
     try {
-      await register(formData)
+      // Preparar dados exatamente como a API espera
+      const registerData = {
+        name: formData.name.trim(),
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password,
+        date_of_birth: formData.date_of_birth, // Já está no formato YYYY-MM-DD do input type="date"
+      }
+
+      console.log('Dados enviados para registro:', registerData) // Para debug
+
+      await register(registerData)
       router.push("/onboarding")
     } catch (error) {
       console.error("Erro no registro:", error)
+      setError(error instanceof Error ? error.message : "Erro no registro")
     } finally {
       setLoading(false)
     }
@@ -60,6 +123,12 @@ export function RegisterForm() {
       {/* Form Container */}
       <div className="bg-[#F0F4F3] rounded-t-3xl min-h-[calc(100vh-80px)] p-6 pt-8">
         <form onSubmit={handleSubmit} className="space-y-6">
+          {error && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-2xl">
+              <p className="text-red-600 text-sm">{error}</p>
+            </div>
+          )}
+
           <div>
             <Input
               label="Nome Completo"
@@ -68,6 +137,7 @@ export function RegisterForm() {
               onChange={handleChange("name")}
               placeholder="João Silva"
               required
+              minLength={3}
             />
           </div>
 
@@ -86,10 +156,10 @@ export function RegisterForm() {
             <Input
               label="Data de Nascimento"
               type="date"
-              value={formData.birthDate}
-              onChange={handleChange("birthDate")}
-              placeholder="DD/MM/AAAA"
+              value={formData.date_of_birth}
+              onChange={handleChange("date_of_birth")}
               required
+              max={new Date(new Date().setFullYear(new Date().getFullYear() - 13)).toISOString().split('T')[0]}
             />
           </div>
 
@@ -100,6 +170,7 @@ export function RegisterForm() {
               value={formData.password}
               onChange={handleChange("password")}
               required
+              minLength={8}
             />
           </div>
 

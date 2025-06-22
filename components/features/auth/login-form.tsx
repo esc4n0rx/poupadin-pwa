@@ -11,18 +11,28 @@ import { useAuth } from "@/contexts/auth-context"
 import Link from "next/link"
 
 export function LoginForm() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  })
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
   const { login } = useAuth()
   const router = useRouter()
+
+  const handleChange = (field: keyof typeof formData) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, [field]: e.target.value }))
+    // Limpar erro quando usuário começar a digitar
+    if (error) setError("")
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setError("")
 
     try {
-      await login(email, password)
+      await login(formData)
 
       // Check if budget setup is completed
       const budgetSetupCompleted = localStorage.getItem("poupadin-budget-setup")
@@ -34,6 +44,7 @@ export function LoginForm() {
       }
     } catch (error) {
       console.error("Erro no login:", error)
+      setError(error instanceof Error ? error.message : "Erro no login")
     } finally {
       setLoading(false)
     }
@@ -53,12 +64,18 @@ export function LoginForm() {
       {/* Form Container */}
       <div className="bg-[#F0F4F3] rounded-t-3xl min-h-[calc(100vh-80px)] p-6 pt-12">
         <form onSubmit={handleSubmit} className="space-y-6">
+          {error && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-2xl">
+              <p className="text-red-600 text-sm">{error}</p>
+            </div>
+          )}
+
           <div>
             <Input
               label="Nome de usuário ou Email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleChange("email")}
               placeholder="exemplo@exemplo.com"
               required
             />
@@ -68,8 +85,8 @@ export function LoginForm() {
             <Input
               label="Senha"
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={handleChange("password")}
               required
             />
           </div>
