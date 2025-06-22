@@ -1,0 +1,79 @@
+/* ----------------------------------------------------------------
+   Importação das camadas base do Tailwind CSS
+   A ordem correta garante que os utilitários tenham precedência.
+----------------------------------------------------------------- */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ----------------------------------------------------------------
+   Variáveis de cor e design tokens
+----------------------------------------------------------------- */
+:root {
+  --primary: #1dd1a1;
+  --primary-dark: #00a085;
+  --secondary: #e8f8f5;
+  --background: #f0f4f3;
+  --white: #ffffff;
+  --text-primary: #2c3e50;
+  --text-secondary: #7f8c8d;
+  --error: #e74c3c;
+  --success: #27ae60;
+}
+
+/* ----------------------------------------------------------------
+   Camada base (@layer base)
+----------------------------------------------------------------- */
+@layer base {
+  * {
+    /* Esta classe 'border-border' não é padrão.
+       Se você a definiu em seu `tailwind.config.js`, está correto.
+       Caso contrário, pode precisar ser @apply border-gray-200 ou similar.
+       Mantive como estava no seu original. */
+    @apply border-border;
+  }
+
+  body {
+    /* CORREÇÃO: Adicionado um espaço entre as duas classes. */
+    @apply bg-[#F0F4F3] text-[#2C3E50];
+  }
+}
+
+/* ----------------------------------------------------------------
+   Componentes utilitários personalizados
+----------------------------------------------------------------- */
+@layer components {
+  .btn-primary {
+    @apply bg-[#1DD1A1] hover:bg-[#00A085] text-white font-medium py-3 px-6 rounded-2xl transition-colors duration-200;
+  }
+
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 text-[#2C3E50] font-medium py-3 px-6 rounded-2xl border border-gray-200 transition-colors duration-200;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 bg-[#E8F8F5] border border-transparent rounded-2xl text-[#2C3E50] placeholder-[#7F8C8D] focus:outline-none focus:ring-2 focus:ring-[#1DD1A1] focus:border-transparent transition-all duration-200;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl p-6 shadow-sm border border-gray-100;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+}
+
+/* ----------------------------------------------------------------
+   Animações
+----------------------------------------------------------------- */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
