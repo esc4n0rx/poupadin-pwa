@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { ExpenseApi } from '@/lib/expense-api'
+import { CategoriesApi } from '@/lib/categories-api'
 import { BudgetCategory } from '@/types/expense'
+import { CategoryTransferRequest } from '@/types/categories'
 
 export function useCategories() {
   const [categories, setCategories] = useState<BudgetCategory[]>([])
@@ -24,6 +26,17 @@ export function useCategories() {
     }
   }
 
+  const transferBetweenCategories = async (data: CategoryTransferRequest) => {
+    try {
+      const response = await CategoriesApi.transferBetweenCategories(data)
+      await fetchCategories() // Recarregar categorias após transferência
+      return response
+    } catch (error) {
+      console.error('Erro ao transferir entre categorias:', error)
+      throw error
+    }
+  }
+
   useEffect(() => {
     fetchCategories()
   }, [])
@@ -32,6 +45,7 @@ export function useCategories() {
     categories,
     loading,
     error,
-    refetch: fetchCategories
+    refetch: fetchCategories,
+    transferBetweenCategories
   }
 }
