@@ -21,15 +21,16 @@ export function DashboardScreen() {
 
   // Usar dados reais do orçamento
   const totalIncome = budget?.total_income || 0
-  const allocatedAmount = budget?.allocated_amount || 0
   const availableBalance = budget?.available_balance || 0
+  console.log("Total Renda:", totalIncome)
+  console.log("Saldo Disponível:", availableBalance)
   
-  // Calcular total de despesas das transações reais
-  const totalExpenses = transactions
-    .filter(t => t.transaction_type === 'expense')
-    .reduce((sum, t) => sum + t.amount, 0)
-
-  const progressPercentage = totalIncome > 0 ? (allocatedAmount / totalIncome) * 100 : 0
+  // Calcular total gasto usando available_balance
+  const totalSpent = totalIncome - availableBalance
+  console.log("Total Gasto:", totalSpent)
+  
+  // Calcular percentual de gastos
+  const spentPercentage = totalIncome > 0 ? (totalSpent / totalIncome) * 100 : 0
 
   // Filtrar objetivos ativos para o carrossel
   const activeGoals = goals.filter(goal => goal.is_active && !goal.is_completed)
@@ -131,8 +132,8 @@ export function DashboardScreen() {
                 <TrendingDown className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-white/80 text-sm">Total Alocado</p>
-                <p className="text-xl font-bold">{formatCurrency(allocatedAmount)}</p>
+                <p className="text-white/80 text-sm">Total Gasto</p>
+                <p className="text-xl font-bold">{formatCurrency(totalSpent)}</p>
               </div>
             </div>
           </Card>
@@ -141,17 +142,17 @@ export function DashboardScreen() {
         {/* Progresso de Gastos */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
-            <p className="text-white text-sm">Orçamento Alocado</p>
+            <p className="text-white text-sm">Gastos do Mês</p>
             <p className="text-white font-semibold">{formatCurrency(availableBalance)} disponível</p>
           </div>
           <div className="w-full bg-white/20 rounded-full h-2">
             <div
               className="bg-white h-2 rounded-full transition-all duration-300"
-              style={{ width: `${Math.min(progressPercentage, 100)}%` }}
+              style={{ width: `${Math.min(spentPercentage, 100)}%` }}
             />
           </div>
           <div className="flex justify-between items-center mt-1">
-            <p className="text-white/70 text-xs">{progressPercentage.toFixed(1)}% do orçamento alocado</p>
+            <p className="text-white/70 text-xs">{spentPercentage.toFixed(1)}% da renda gasta</p>
             <p className="text-white/70 text-xs">{formatCurrency(totalIncome)}</p>
           </div>
         </div>
