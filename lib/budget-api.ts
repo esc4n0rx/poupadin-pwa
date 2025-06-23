@@ -1,5 +1,5 @@
 import { apiClient } from './api'
-import { BudgetSetupRequest, BudgetSetupResponse, BudgetSetupStatus } from '@/types/budget'
+import { BudgetSetupRequest, BudgetSetupResponse, BudgetSetupStatus, BudgetResponse } from '@/types/budget'
 
 export class BudgetApi {
   static async getSetupStatus(): Promise<BudgetSetupStatus> {
@@ -8,5 +8,9 @@ export class BudgetApi {
 
   static async createInitialBudget(data: BudgetSetupRequest): Promise<BudgetSetupResponse> {
     return apiClient.post<BudgetSetupResponse>('/budget/setup', data, true)
+  }
+
+  static async getBudget(): Promise<BudgetResponse> {
+    return apiClient.get<BudgetResponse>('/budget', true)
   }
 }

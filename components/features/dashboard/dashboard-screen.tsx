@@ -9,23 +9,27 @@ import { formatCurrency } from "@/lib/utils"
 import { BottomNavigation } from "@/components/features/navigation/bottom-navigation"
 import { useTransactions } from "@/hooks/use-transactions"
 import { useGoals } from "@/hooks/use-goals"
+import { useBudget } from "@/hooks/use-budget"
 import { GoalCard } from "@/components/features/goals/goal-card"
 
 export function DashboardScreen() {
   const { user } = useAuth()
   const { transactions, loading: transactionsLoading } = useTransactions({ limit: 10 })
   const { goals, loading: goalsLoading } = useGoals()
+  const { budget, loading: budgetLoading, error: budgetError } = useBudget()
   const [currentGoalIndex, setCurrentGoalIndex] = useState(0)
 
-  // Mock data para renda total - em produção, isso viria de uma API
-  const totalIncome = 5000 // TODO: Buscar da API de orçamento
+  // Usar dados reais do orçamento
+  const totalIncome = budget?.total_income || 0
+  const allocatedAmount = budget?.allocated_amount || 0
+  const availableBalance = budget?.available_balance || 0
   
   // Calcular total de despesas das transações reais
   const totalExpenses = transactions
     .filter(t => t.transaction_type === 'expense')
     .reduce((sum, t) => sum + t.amount, 0)
 
-  const progressPercentage = totalIncome > 0 ? (totalExpenses / totalIncome) * 100 : 0
+  const progressPercentage = totalIncome > 0 ? (allocatedAmount / totalIncome) * 100 : 0
 
   // Filtrar objetivos ativos para o carrossel
   const activeGoals = goals.filter(goal => goal.is_active && !goal.is_completed)
@@ -68,6 +72,33 @@ export function DashboardScreen() {
     return '💰'
   }
 
+  // Loading state para orçamento
+  if (budgetLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#1DD1A1] to-[#00A085] flex items-center justify-center">
+        <div className="text-white text-lg">Carregando orçamento...</div>
+      </div>
+    )
+  }
+
+  // Error state para orçamento
+  if (budgetError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#1DD1A1] to-[#00A085] flex items-center justify-center p-6">
+        <div className="bg-white rounded-3xl p-6 max-w-md w-full text-center">
+          <h2 className="text-xl font-bold text-red-600 mb-4">Erro ao Carregar Orçamento</h2>
+          <p className="text-gray-600 mb-6">{budgetError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="w-full bg-[#1DD1A1] text-white py-3 rounded-2xl font-medium"
+          >
+            Tentar Novamente
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#1DD1A1] to-[#00A085] pb-20">
       {/* Header */}
@@ -100,8 +131,8 @@ export function DashboardScreen() {
                 <TrendingDown className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-white/80 text-sm">Total de Despesas</p>
-                <p className="text-xl font-bold">{formatCurrency(totalExpenses)}</p>
+                <p className="text-white/80 text-sm">Total Alocado</p>
+                <p className="text-xl font-bold">{formatCurrency(allocatedAmount)}</p>
               </div>
             </div>
           </Card>
@@ -110,14 +141,18 @@ export function DashboardScreen() {
         {/* Progresso de Gastos */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
-            <p className="text-white text-sm">Progresso de Gastos</p>
-            <p className="text-white font-semibold">{formatCurrency(totalIncome)}</p>
+            <p className="text-white text-sm">Orçamento Alocado</p>
+            <p className="text-white font-semibold">{formatCurrency(availableBalance)} disponível</p>
           </div>
           <div className="w-full bg-white/20 rounded-full h-2">
             <div
               className="bg-white h-2 rounded-full transition-all duration-300"
               style={{ width: `${Math.min(progressPercentage, 100)}%` }}
             />
+          </div>
+          <div className="flex justify-between items-center mt-1">
+            <p className="text-white/70 text-xs">{progressPercentage.toFixed(1)}% do orçamento alocado</p>
+            <p className="text-white/70 text-xs">{formatCurrency(totalIncome)}</p>
           </div>
         </div>
       </div>
