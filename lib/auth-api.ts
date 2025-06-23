@@ -73,8 +73,13 @@ export class AuthApi {
   }
 
   static async logoutAllDevices(): Promise<void> {
-    await apiClient.post('/auth/logout-all', {}, true)
-    TokenStorage.clearAll()
+    try {
+      await apiClient.post('/auth/logout-all', {}, true)
+    } catch (error) {
+      console.warn('Erro ao fazer logout de todos os dispositivos:', error)
+    } finally {
+      TokenStorage.clearAll()
+    }
   }
 
   static async getTokenStatus(): Promise<TokenStatusResponse> {
@@ -105,6 +110,28 @@ export class AuthApi {
   }
 
   static isAuthenticated(): boolean {
-    return TokenStorage.hasTokens()
+    return TokenStorage.isSessionValid()
+  }
+
+  static async validateSession(): Promise<boolean> {
+    try {
+      if (!TokenStorage.hasTokens()) {
+        return false
+      }
+
+      // Tentar fazer uma chamada autenticada para verificar se a sessão é válida
+      await this.getTokenStatus()
+      return true
+    } catch (error) {
+      // Se falhar, tentar refresh
+      try {
+        await this.refreshToken()
+        return true
+      } catch (refreshError) {
+        // Se refresh também falhar, sessão é inválida
+        TokenStorage.clearAll()
+        return false
+      }
+    }
   }
 }

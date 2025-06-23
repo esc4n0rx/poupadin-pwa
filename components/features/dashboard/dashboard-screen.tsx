@@ -62,6 +62,8 @@ export function DashboardScreen() {
 
   // Função para obter emoji da categoria
   const getCategoryEmoji = (categoryName: string) => {
+    if (!categoryName) return '💰' // Emoji padrão se não houver nome
+    
     const name = categoryName.toLowerCase()
     if (name.includes('alimentação') || name.includes('comida')) return '🍽️'
     if (name.includes('transporte') || name.includes('combustível')) return '⛽'
@@ -239,28 +241,33 @@ export function DashboardScreen() {
             </div>
           ) : (
             <div className="space-y-3">
-              {transactions.map((transaction) => (
-                <Card key={transaction.id} className="p-4">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                      <span className="text-xl">{getCategoryEmoji(transaction.budget_categories.name)}</span>
+              {transactions.map((transaction) => {
+                // Obter nome da categoria de forma segura
+                const categoryName = transaction.budget_categories?.name || 'Categoria não definida'
+                
+                return (
+                  <Card key={transaction.id} className="p-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                        <span className="text-xl">{getCategoryEmoji(categoryName)}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-medium text-[#2C3E50]">{transaction.description}</h4>
+                        <p className="text-sm text-[#7F8C8D]">{categoryName}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className={`font-semibold ${
+                          transaction.transaction_type === 'expense' ? 'text-red-500' : 'text-green-500'
+                        }`}>
+                          {transaction.transaction_type === 'expense' ? '-' : '+'}
+                          {formatCurrency(transaction.amount)}
+                        </p>
+                        <p className="text-xs text-[#7F8C8D]">{getRelativeTime(transaction.created_at)}</p>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <h4 className="font-medium text-[#2C3E50]">{transaction.description}</h4>
-                      <p className="text-sm text-[#7F8C8D]">{transaction.budget_categories.name}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className={`font-semibold ${
-                        transaction.transaction_type === 'expense' ? 'text-red-500' : 'text-green-500'
-                      }`}>
-                        {transaction.transaction_type === 'expense' ? '-' : '+'}
-                        {formatCurrency(transaction.amount)}
-                      </p>
-                      <p className="text-xs text-[#7F8C8D]">{getRelativeTime(transaction.created_at)}</p>
-                    </div>
-                  </div>
-                </Card>
-              ))}
+                  </Card>
+                )
+              })}
             </div>
           )}
         </div>

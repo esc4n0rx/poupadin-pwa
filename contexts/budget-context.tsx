@@ -1,4 +1,3 @@
-// contexts/budget-context.tsx
 "use client"
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
@@ -74,13 +73,14 @@ export function BudgetProvider({ children }: { children: ReactNode }) {
     },
   ])
 
-  // Converter dados da API para formato do contexto
+  // Converter dados da API para formato do contexto com verificações de segurança
   const convertedTransactions: Transaction[] = apiTransactions.map(t => ({
     id: t.id,
     description: t.description,
     amount: t.amount,
     type: t.transaction_type,
-    category: t.budget_categories.name,
+    // Verificação segura para budget_categories
+    category: t.budget_categories?.name || 'Categoria não definida',
     date: t.created_at
   }))
 

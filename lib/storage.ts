@@ -57,4 +57,21 @@ export class TokenStorage {
   static hasTokens(): boolean {
     return !!(this.getAccessToken() && this.getRefreshToken())
   }
+
+  static isSessionValid(): boolean {
+    const accessToken = this.getAccessToken()
+    const refreshToken = this.getRefreshToken()
+    const userData = this.getUserData()
+    
+    return !!(accessToken && refreshToken && userData)
+  }
+
+  static getSessionData() {
+    return {
+      accessToken: this.getAccessToken(),
+      refreshToken: this.getRefreshToken(),
+      user: this.getUserData(),
+      isValid: this.isSessionValid()
+    }
+  }
 }

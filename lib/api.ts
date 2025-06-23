@@ -11,6 +11,10 @@ interface RequestConfig extends RequestInit {
 class ApiClient {
   private isRefreshing = false
   private refreshPromise: Promise<string> | null = null
+  private failedQueue: Array<{
+    resolve: (value: string) => void
+    reject: (error: any) => void
+  }> = []
 
   private async request<T>(
     endpoint: string,
@@ -88,20 +92,30 @@ class ApiClient {
   }
 
   private async refreshAccessToken(): Promise<string> {
-    // Se já está refreshing, aguardar o processo atual
-    if (this.isRefreshing && this.refreshPromise) {
-      return this.refreshPromise
+    // Se já está refreshing, enfileirar a requisição
+    if (this.isRefreshing) {
+      return new Promise((resolve, reject) => {
+        this.failedQueue.push({ resolve, reject })
+      })
     }
 
     this.isRefreshing = true
-    this.refreshPromise = this.performRefresh()
 
     try {
-      const newToken = await this.refreshPromise
+      const newToken = await this.performRefresh()
+      
+      // Processar fila de requisições pendentes
+      this.failedQueue.forEach(({ resolve }) => resolve(newToken))
+      this.failedQueue = []
+      
       return newToken
+    } catch (error) {
+      // Rejeitar todas as requisições na fila
+      this.failedQueue.forEach(({ reject }) => reject(error))
+      this.failedQueue = []
+      throw error
     } finally {
       this.isRefreshing = false
-      this.refreshPromise = null
     }
   }
 
@@ -125,11 +139,19 @@ class ApiClient {
       })
 
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        
         // Se refresh falhou, limpar tokens e redirecionar para login
         TokenStorage.clearAll()
-        window.location.href = '/auth/login'
+        
+        // Só redirecionar se estivermos no browser
+        if (typeof window !== 'undefined') {
+          window.location.href = '/auth/login'
+        }
+        
         throw new ApiException({
-          message: 'Sessão expirada',
+          message: errorData.message || 'Sessão expirada',
+          code: errorData.code,
           status: 401,
         })
       }
@@ -144,7 +166,11 @@ class ApiClient {
       return data.accessToken
     } catch (error) {
       TokenStorage.clearAll()
-      window.location.href = '/auth/login'
+      
+      if (typeof window !== 'undefined') {
+        window.location.href = '/auth/login'
+      }
+      
       throw error
     }
   }
