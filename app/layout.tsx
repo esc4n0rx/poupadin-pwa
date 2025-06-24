@@ -3,9 +3,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { AuthProvider } from "@/contexts/auth-context"
-import { BudgetProvider } from "@/contexts/budget-context"
-import { PWAProvider } from "@/components/pwa-provider"
+import { Providers } from "./providers"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -49,11 +47,9 @@ export default function RootLayout({
         <meta name="theme-color" content="#1DD1A1" />
       </head>
       <body className={inter.className}>
-        <PWAProvider>
-          <AuthProvider>
-            <BudgetProvider>{children}</BudgetProvider>
-          </AuthProvider>
-        </PWAProvider>
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   )

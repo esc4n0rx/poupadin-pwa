@@ -2,7 +2,7 @@
   "name": "Poupadin - Controle Financeiro",
   "short_name": "Poupadin",
   "description": "Gerencie suas finanças de forma simples e inteligente",
-  "start_url": "/pwa-check",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#F0F4F3",
   "theme_color": "#1DD1A1",
