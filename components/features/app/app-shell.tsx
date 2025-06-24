@@ -1,6 +1,8 @@
 "use client"
 
 import { useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/contexts/auth-context'
 import { useNativeNavigation, Screen } from '@/hooks/use-native-navigation'
 import { SwipeDetector } from '@/lib/native-navigation'
 import { ScreenTransition } from './screen-transition'
@@ -10,8 +12,12 @@ import { GoalsScreen } from '../goals/goals-screen'
 import { ExpenseScreen } from '../expense/expense-screen'
 import { CategoriesScreen } from '../categories/categories-screen'
 import { ProfileScreen } from '../profile/profile-screen'
+import { AuthContainer } from '../auth/auth-container'
 
 export function AppShell() {
+  const { user, isLoading: authLoading } = useAuth()
+  const router = useRouter()
+  
   const {
     currentScreen,
     previousScreen,
@@ -23,6 +29,15 @@ export function AppShell() {
 
   const containerRef = useRef<HTMLDivElement>(null)
   const swipeDetector = useRef(new SwipeDetector({ threshold: 80, velocity: 0.2 }))
+
+  // Proteção de rota - verificar autenticação
+  useEffect(() => {
+    if (!authLoading && !user) {
+      // Se não estiver autenticado, não redirecionar via router
+      // Em vez disso, renderizar AuthContainer diretamente
+      console.log('Usuário não autenticado, mostrando AuthContainer')
+    }
+  }, [user, authLoading])
 
   // Configurar detecção de swipe
   useEffect(() => {
@@ -66,6 +81,23 @@ export function AppShell() {
       document.body.style.overflow = 'auto'
     }
   }, [isTransitioning])
+
+  // Loading de autenticação
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F0F4F3]">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-12 h-12 border-4 border-[#1DD1A1] border-t-transparent rounded-full animate-spin" />
+          <p className="text-[#7F8C8D] font-medium">Verificando autenticação...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Se não estiver autenticado, mostrar AuthContainer
+  if (!user) {
+    return <AuthContainer initialView="login" />
+  }
 
   const renderScreen = (screen: Screen) => {
     switch (screen) {
