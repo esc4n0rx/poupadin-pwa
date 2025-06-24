@@ -41,7 +41,7 @@ export function LoginForm() {
         
         // Verificar se o setup inicial foi completado
         if (userData.initial_setup_completed) {
-          router.push("/dashboard")
+          router.push("/app")
         } else {
           router.push("/onboarding")
         }

@@ -12,7 +12,8 @@ export const metadata: Metadata = {
   description: "Gerencie suas finanças de forma simples e inteligente",
   manifest: "/manifest.json",
   themeColor: "#1DD1A1",
-    generator: 'v0.dev'
+  generator: 'v0.dev',
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
 }
 
 export default function RootLayout({

@@ -16,6 +16,11 @@ const navigationItems = [
 export function BottomNavigation() {
   const pathname = usePathname()
 
+  // Se estivermos na rota nativa, não renderizar este componente
+  if (pathname === '/app') {
+    return null
+  }
+
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-3">
       <div className="flex items-center justify-between">
@@ -42,6 +47,13 @@ export function BottomNavigation() {
             </Link>
           )
         })}
+      </div>
+      
+      {/* Link para versão nativa */}
+      <div className="absolute top-2 right-2">
+        <Link href="/app" className="text-xs text-gray-500 hover:text-[#1DD1A1]">
+          Modo Nativo
+        </Link>
       </div>
     </div>
   )
