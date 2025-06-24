@@ -1,5 +1,6 @@
-import { RegisterForm } from "@/components/features/auth/register-form"
+// app/auth/register/page.tsx
+import { AuthContainer } from "@/components/features/auth/auth-container"
 
 export default function RegisterPage() {
-  return <RegisterForm />
+  return <AuthContainer initialView="register" />
 }

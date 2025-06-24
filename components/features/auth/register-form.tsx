@@ -1,3 +1,4 @@
+// components/features/auth/register-form.tsx
 "use client"
 
 import type React from "react"
@@ -10,7 +11,11 @@ import { Input } from "@/components/ui/input"
 import { useAuth } from "@/contexts/auth-context"
 import Link from "next/link"
 
-export function RegisterForm() {
+interface RegisterFormProps {
+  onNavigateToLogin?: () => void
+}
+
+export function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -41,27 +46,25 @@ export function RegisterForm() {
     // Validar email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(formData.email)) {
-      return "Email deve ser válido"
+      return "Email inválido"
     }
 
     if (!formData.date_of_birth) {
       return "Data de nascimento é obrigatória"
     }
 
-    // Validar se a data está no formato correto (YYYY-MM-DD)
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/
-    if (!dateRegex.test(formData.date_of_birth)) {
-      return "Data de nascimento deve estar no formato correto"
-    }
-
-    // Validar se a pessoa tem pelo menos 13 anos
+    // Validar idade mínima (13 anos)
     const birthDate = new Date(formData.date_of_birth)
     const today = new Date()
-    const age = today.getFullYear() - birthDate.getFullYear()
+    let age = today.getFullYear() - birthDate.getFullYear()
     const monthDiff = today.getMonth() - birthDate.getMonth()
     
-    if (age < 13 || (age === 13 && monthDiff < 0) || (age === 13 && monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      return "Você deve ter pelo menos 13 anos"
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--
+    }
+
+    if (age < 13) {
+      return "Você deve ter pelo menos 13 anos para se cadastrar"
     }
 
     if (formData.password.length < 8) {
@@ -77,9 +80,7 @@ export function RegisterForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError("")
-
-    // Validar formulário
+    
     const validationError = validateForm()
     if (validationError) {
       setError(validationError)
@@ -87,120 +88,108 @@ export function RegisterForm() {
     }
 
     setLoading(true)
+    setError("")
 
     try {
-      // Preparar dados exatamente como a API espera
-      const registerData = {
-        name: formData.name.trim(),
-        email: formData.email.trim().toLowerCase(),
+      await register({
+        name: formData.name,
+        email: formData.email,
         password: formData.password,
-        date_of_birth: formData.date_of_birth, // Já está no formato YYYY-MM-DD do input type="date"
-      }
+        date_of_birth: formData.date_of_birth,
+      })
 
-      console.log('Dados enviados para registro:', registerData) // Para debug
-
-      await register(registerData)
-      
-      // Aguardar um pouco para garantir que o contexto foi atualizado
-      setTimeout(() => {
-        // Após registro e login automático, sempre vai para onboarding
-        // pois initial_setup_completed será false para novos usuários
-        router.push("/onboarding")
-      }, 100)
-
+      // Após registro bem-sucedido, redirecionar para onboarding
+      router.push("/onboarding")
     } catch (error) {
       console.error("Erro no registro:", error)
-      setError(error instanceof Error ? error.message : "Erro no registro")
+      setError(error instanceof Error ? error.message : "Erro desconhecido")
     } finally {
       setLoading(false)
     }
   }
 
+  const handleNavigateToLogin = () => {
+    if (onNavigateToLogin) {
+      onNavigateToLogin()
+    } else {
+      // Fallback para navegação por rota se não houver prop
+      router.push('/auth/login')
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#1DD1A1] to-[#00A085]">
+    <div className="min-h-screen bg-[#F0F4F3] flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between p-6 text-white">
-        <Link href="/">
+      <div className="bg-[#1DD1A1] pt-16 pb-20 px-6 relative">
+        <button
+          onClick={handleNavigateToLogin}
+          className="absolute top-16 left-6 p-2 text-white hover:bg-white/10 rounded-full transition-colors"
+        >
           <ArrowLeft className="w-6 h-6" />
-        </Link>
-        <h1 className="text-xl font-semibold">Criar Conta</h1>
-        <div className="w-6" />
+        </button>
+        
+        <div className="text-center mt-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Criar Conta</h1>
+          <p className="text-white/90">Preencha seus dados para começar</p>
+        </div>
       </div>
 
       {/* Form Container */}
-      <div className="bg-[#F0F4F3] rounded-t-3xl min-h-[calc(100vh-80px)] p-6 pt-8">
+      <div className="flex-1 bg-white rounded-t-3xl -mt-6 pt-8 px-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-2xl">
-              <p className="text-red-600 text-sm">{error}</p>
-            </div>
-          )}
-
           <div>
             <Input
-              label="Nome Completo"
               type="text"
+              label="Nome Completo"
               value={formData.name}
               onChange={handleChange("name")}
-              placeholder="João Silva"
-              required
-              minLength={3}
+              placeholder="Digite seu nome"
+              disabled={loading}
             />
           </div>
 
           <div>
             <Input
-              label="Email"
               type="email"
+              label="Email"
               value={formData.email}
               onChange={handleChange("email")}
-              placeholder="exemplo@exemplo.com"
-              required
+              placeholder="Digite seu email"
+              disabled={loading}
             />
           </div>
 
           <div>
             <Input
-              label="Data de Nascimento"
               type="date"
+              label="Data de Nascimento"
               value={formData.date_of_birth}
               onChange={handleChange("date_of_birth")}
-              required
-              max={new Date(new Date().setFullYear(new Date().getFullYear() - 13)).toISOString().split('T')[0]}
+              disabled={loading}
             />
           </div>
 
           <div>
             <Input
-              label="Senha"
               type="password"
+              label="Senha"
               value={formData.password}
               onChange={handleChange("password")}
-              required
-              minLength={8}
+              placeholder="Mínimo 8 caracteres"
+              disabled={loading}
             />
           </div>
 
           <div>
             <Input
-              label="Confirmar Senha"
               type="password"
+              label="Confirmar Senha"
               value={formData.confirmPassword}
               onChange={handleChange("confirmPassword")}
-              required
+              placeholder="Digite a senha novamente"
+              error={error}
+              disabled={loading}
             />
-          </div>
-
-          <div className="text-center text-sm text-[#7F8C8D] mt-6">
-            Ao continuar, você concorda com os{" "}
-            <Link href="/terms" className="text-[#1DD1A1] hover:text-[#00A085]">
-              Termos de Uso
-            </Link>{" "}
-            e{" "}
-            <Link href="/privacy" className="text-[#1DD1A1] hover:text-[#00A085]">
-              Política de Privacidade
-            </Link>
-            .
           </div>
 
           <Button type="submit" className="w-full mt-8" loading={loading}>
@@ -209,9 +198,13 @@ export function RegisterForm() {
 
           <div className="text-center mt-6">
             <span className="text-[#7F8C8D]">Já tem uma conta? </span>
-            <Link href="/auth/login" className="text-[#1DD1A1] hover:text-[#00A085] font-medium transition-colors">
+            <button
+              type="button"
+              onClick={handleNavigateToLogin}
+              className="text-[#1DD1A1] hover:text-[#00A085] font-medium transition-colors"
+            >
               Entrar
-            </Link>
+            </button>
           </div>
         </form>
       </div>

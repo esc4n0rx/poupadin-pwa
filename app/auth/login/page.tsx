@@ -1,5 +1,6 @@
-import { LoginForm } from "@/components/features/auth/login-form"
+// app/auth/login/page.tsx
+import { AuthContainer } from "@/components/features/auth/auth-container"
 
 export default function LoginPage() {
-  return <LoginForm />
+  return <AuthContainer initialView="login" />
 }
