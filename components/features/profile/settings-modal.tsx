@@ -1,4 +1,3 @@
-// components/features/profile/settings-modal.tsx (continuação)
 "use client"
 
 import React, { useState } from 'react'
@@ -30,9 +29,15 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
     setSettings(prev => ({ ...prev, [key]: value }))
   }
 
+  const handleSave = () => {
+    // TODO: Implementar salvamento das configurações
+    console.log('Salvando configurações:', settings)
+    onClose()
+  }
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end justify-center z-50">
-      <div className="bg-white rounded-t-3xl w-full max-w-md p-6 animate-slide-up max-h-[90vh] overflow-y-auto">
+    <div className="modal-container">
+      <div className="modal-content-with-nav">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-[#2C3E50]">Configurações</h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
@@ -71,10 +76,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
             </h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div>
-                  <span className="text-sm text-[#2C3E50]">Notificações Push</span>
-                  <p className="text-xs text-[#7F8C8D]">Receba alertas no dispositivo</p>
-                </div>
+                <span className="text-sm text-[#2C3E50]">Notificações push</span>
                 <input
                   type="checkbox"
                   checked={settings.pushNotifications}
@@ -83,10 +85,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <div>
-                  <span className="text-sm text-[#2C3E50]">Notificações por Email</span>
-                  <p className="text-xs text-[#7F8C8D]">Receba resumos por email</p>
-                </div>
+                <span className="text-sm text-[#2C3E50]">Notificações por email</span>
                 <input
                   type="checkbox"
                   checked={settings.emailNotifications}
@@ -97,11 +96,11 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
             </div>
           </div>
 
-          {/* Idioma e Região */}
+          {/* Localização */}
           <div>
             <h3 className="text-sm font-medium text-[#2C3E50] mb-3 flex items-center">
               <Globe className="w-4 h-4 mr-2" />
-              Idioma e Região
+              Localização
             </h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -123,9 +122,9 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                   onChange={(e) => handleSelect('currency', e.target.value)}
                   className="px-3 py-1 bg-gray-100 rounded-lg text-sm text-[#2C3E50] focus:outline-none focus:ring-2 focus:ring-[#1DD1A1]"
                 >
-                  <option value="BRL">Real (R$)</option>
-                  <option value="USD">Dólar ($)</option>
-                  <option value="EUR">Euro (€)</option>
+                  <option value="BRL">Real (BRL)</option>
+                  <option value="USD">Dólar (USD)</option>
+                  <option value="EUR">Euro (EUR)</option>
                 </select>
               </div>
             </div>
@@ -137,27 +136,45 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
               <Smartphone className="w-4 h-4 mr-2" />
               Dispositivos
             </h3>
-            <div className="p-3 bg-gray-50 rounded-xl">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-[#1DD1A1] rounded-lg flex items-center justify-center">
-                  <Globe className="w-4 h-4 text-white" />
+            <div className="p-4 bg-gray-50 rounded-2xl">
+              <div className="flex items-center space-x-3 mb-2">
+                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                  <Smartphone className="w-4 h-4 text-green-600" />
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-[#2C3E50]">Navegador Web</p>
+                <div>
+                  <p className="font-medium text-[#2C3E50] text-sm">Este dispositivo</p>
                   <p className="text-xs text-[#7F8C8D]">Ativo agora</p>
                 </div>
               </div>
+              <p className="text-xs text-[#7F8C8D]">
+                Gerencie seus dispositivos conectados na seção de segurança.
+              </p>
             </div>
           </div>
 
-          <div className="flex space-x-4 pt-4">
-            <Button type="button" variant="secondary" onClick={onClose} className="flex-1">
-              Cancelar
-            </Button>
-            <Button type="button" className="flex-1" onClick={onClose}>
-              Salvar
-            </Button>
+          {/* Informações do App */}
+          <div>
+            <h3 className="text-sm font-medium text-[#2C3E50] mb-3">Informações do App</h3>
+            <div className="space-y-2 text-sm text-[#7F8C8D]">
+              <div className="flex justify-between">
+                <span>Versão</span>
+                <span>1.0.0</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Build</span>
+                <span>2025.06.001</span>
+              </div>
+            </div>
           </div>
+        </div>
+
+        <div className="modal-actions-sticky">
+          <Button variant="secondary" onClick={onClose} className="flex-1">
+            Cancelar
+          </Button>
+          <Button onClick={handleSave} className="flex-1">
+            Salvar
+          </Button>
         </div>
       </div>
     </div>

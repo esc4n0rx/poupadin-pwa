@@ -1,4 +1,3 @@
-// components/features/profile/about-modal.tsx
 "use client"
 
 import React from 'react'
@@ -11,8 +10,8 @@ interface AboutModalProps {
 
 export function AboutModal({ onClose }: AboutModalProps) {
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end justify-center z-50">
-      <div className="bg-white rounded-t-3xl w-full max-w-md p-6 animate-slide-up max-h-[90vh] overflow-y-auto">
+    <div className="modal-container">
+      <div className="modal-content-with-nav">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-[#2C3E50]">Sobre o Poupadin</h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
@@ -41,54 +40,70 @@ export function AboutModal({ onClose }: AboutModalProps) {
             </p>
           </div>
 
-          {/* Estatísticas */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-[#1DD1A1]">50k+</p>
-              <p className="text-xs text-[#7F8C8D]">Usuários</p>
+          {/* Features */}
+          <div className="grid grid-cols-2 gap-4 text-left">
+            <div className="p-3 bg-white rounded-xl border border-gray-100">
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mb-2">
+                <Shield className="w-4 h-4 text-blue-600" />
+              </div>
+              <h4 className="font-medium text-[#2C3E50] text-sm">Seguro</h4>
+              <p className="text-xs text-[#7F8C8D]">Seus dados protegidos</p>
             </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-[#1DD1A1]">R$ 1M+</p>
-              <p className="text-xs text-[#7F8C8D]">Poupado</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-[#1DD1A1]">4.8★</p>
-              <p className="text-xs text-[#7F8C8D]">Avaliação</p>
+            
+            <div className="p-3 bg-white rounded-xl border border-gray-100">
+              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mb-2">
+                <Heart className="w-4 h-4 text-green-600" />
+              </div>
+              <h4 className="font-medium text-[#2C3E50] text-sm">Simples</h4>
+              <p className="text-xs text-[#7F8C8D]">Fácil de usar</p>
             </div>
           </div>
 
           {/* Links */}
           <div className="space-y-3">
-            <button className="w-full flex items-center justify-center space-x-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-              <FileText className="w-5 h-5 text-[#7F8C8D]" />
-              <span className="text-[#2C3E50] font-medium">Termos de Uso</span>
+            <button className="w-full p-4 bg-white rounded-xl border border-gray-100 flex items-center space-x-3 hover:bg-gray-50 transition-colors">
+              <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                <FileText className="w-5 h-5 text-gray-600" />
+              </div>
+              <div className="flex-1 text-left">
+                <h4 className="font-medium text-[#2C3E50]">Termos de Uso</h4>
+                <p className="text-sm text-[#7F8C8D]">Leia nossos termos</p>
+              </div>
             </button>
-            
-            <button className="w-full flex items-center justify-center space-x-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-              <Shield className="w-5 h-5 text-[#7F8C8D]" />
-              <span className="text-[#2C3E50] font-medium">Política de Privacidade</span>
+
+            <button className="w-full p-4 bg-white rounded-xl border border-gray-100 flex items-center space-x-3 hover:bg-gray-50 transition-colors">
+              <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                <Shield className="w-5 h-5 text-gray-600" />
+              </div>
+              <div className="flex-1 text-left">
+                <h4 className="font-medium text-[#2C3E50]">Política de Privacidade</h4>
+                <p className="text-sm text-[#7F8C8D]">Como protegemos seus dados</p>
+              </div>
             </button>
-            
-            <button className="w-full flex items-center justify-center space-x-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-              <Mail className="w-5 h-5 text-[#7F8C8D]" />
-              <span className="text-[#2C3E50] font-medium">Suporte</span>
-            </button>
-            
-            <button className="w-full flex items-center justify-center space-x-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-              <Github className="w-5 h-5 text-[#7F8C8D]" />
-              <span className="text-[#2C3E50] font-medium">GitHub</span>
+
+            <button className="w-full p-4 bg-white rounded-xl border border-gray-100 flex items-center space-x-3 hover:bg-gray-50 transition-colors">
+              <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                <Mail className="w-5 h-5 text-gray-600" />
+              </div>
+              <div className="flex-1 text-left">
+                <h4 className="font-medium text-[#2C3E50]">Suporte</h4>
+                <p className="text-sm text-[#7F8C8D]">contato@poupadin.com</p>
+              </div>
             </button>
           </div>
 
-          {/* Créditos */}
-          <div className="pt-4 border-t border-gray-200">
-            <p className="text-xs text-[#7F8C8D] flex items-center justify-center space-x-1">
-              <span>Feito com</span>
-              <Heart className="w-3 h-3 text-red-500" />
-              <span>pela equipe Poupadin</span>
+          {/* Copyright */}
+          <div className="pt-4 border-t border-gray-100">
+            <p className="text-xs text-[#7F8C8D]">
+              © 2025 Poupadin. Todos os direitos reservados.
+            </p>
+            <p className="text-xs text-[#7F8C8D] mt-1">
+              Feito com <Heart className="w-3 h-3 inline text-red-500" /> para suas finanças
             </p>
           </div>
+        </div>
 
+        <div className="modal-actions-sticky">
           <Button onClick={onClose} className="w-full">
             Fechar
           </Button>

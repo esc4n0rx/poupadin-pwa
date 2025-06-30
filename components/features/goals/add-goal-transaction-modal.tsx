@@ -1,4 +1,3 @@
-// components/features/goals/add-goal-transaction-modal.tsx
 "use client"
 
 import React, { useState } from 'react'
@@ -60,75 +59,59 @@ export function AddGoalTransactionModal({ goal, onClose, onAddTransaction }: Add
   const newProgress = Math.min((newAmount / goal.target_amount) * 100, 100)
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end justify-center z-50">
-      <div className="bg-white rounded-t-3xl w-full max-w-md p-6 animate-slide-up max-h-[90vh] overflow-y-auto">
+    <div className="modal-container">
+      <div className="modal-content-with-nav">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-[#2C3E50]">
-            {transactionType === 'deposit' ? 'Adicionar Valor' : 'Retirar Valor'}
+            {transactionType === 'deposit' ? 'Depositar no Objetivo' : 'Retirar do Objetivo'}
           </h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
             <X className="w-5 h-5 text-[#7F8C8D]" />
           </button>
         </div>
 
-        {/* Informações do Objetivo */}
-        <div className="mb-6 p-4 bg-gray-50 rounded-2xl">
-          <h3 className="font-semibold text-[#2C3E50] mb-2">{goal.name}</h3>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <p className="text-[#7F8C8D]">Valor Atual</p>
-              <p className="font-semibold text-[#2C3E50]">{formatCurrency(goal.current_amount)}</p>
-            </div>
-            <div>
-              <p className="text-[#7F8C8D]">Falta Alcançar</p>
-              <p className="font-semibold text-[#2C3E50]">{formatCurrency(remainingToTarget)}</p>
-            </div>
+        {/* Goal Summary */}
+        <div className="p-4 bg-gray-50 rounded-2xl mb-6">
+          <div className="flex items-center space-x-3 mb-3">
+            <div 
+              className="w-4 h-4 rounded-full" 
+              style={{ backgroundColor: goal.color }}
+            />
+            <h3 className="font-medium text-[#2C3E50]">{goal.name}</h3>
           </div>
-          <div className="mt-3">
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="h-2 rounded-full transition-all duration-300"
-                style={{ 
-                  width: `${(goal.current_amount / goal.target_amount) * 100}%`,
-                  backgroundColor: goal.color
-                }}
-              />
-            </div>
-            <p className="text-xs text-[#7F8C8D] mt-1">
-              {((goal.current_amount / goal.target_amount) * 100).toFixed(1)}% concluído
-            </p>
+          <div className="text-sm text-[#7F8C8D]">
+            <p>Valor atual: {formatCurrency(goal.current_amount)}</p>
+            <p>Meta: {formatCurrency(goal.target_amount)}</p>
+            <p>Restante: {formatCurrency(remainingToTarget)}</p>
           </div>
         </div>
 
-        {/* Tipo de Transação */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-[#2C3E50] mb-3">Tipo de Transação</label>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={() => setTransactionType('deposit')}
-              className={`flex items-center justify-center space-x-2 p-3 rounded-xl border-2 transition-all ${
-                transactionType === 'deposit'
-                  ? 'border-[#1DD1A1] bg-[#E8F8F5] text-[#1DD1A1]'
-                  : 'border-gray-200 bg-white text-[#7F8C8D]'
-              }`}
-            >
-              <Plus className="w-5 h-5" />
-              <span className="font-medium">Adicionar</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setTransactionType('withdrawal')}
-              className={`flex items-center justify-center space-x-2 p-3 rounded-xl border-2 transition-all ${
-                transactionType === 'withdrawal'
-                  ? 'border-red-500 bg-red-50 text-red-500'
-                  : 'border-gray-200 bg-white text-[#7F8C8D]'
-              }`}
-            >
-              <Minus className="w-5 h-5" />
-              <span className="font-medium">Retirar</span>
-            </button>
-          </div>
+        {/* Transaction Type Toggle */}
+        <div className="flex space-x-1 mb-6 bg-gray-100 rounded-2xl p-1">
+          <button
+            type="button"
+            onClick={() => setTransactionType('deposit')}
+            className={`flex-1 py-2 px-4 rounded-xl font-medium transition-colors flex items-center justify-center space-x-2 ${
+              transactionType === 'deposit'
+                ? 'bg-white text-[#1DD1A1] shadow-sm'
+                : 'text-[#7F8C8D]'
+            }`}
+          >
+            <Plus className="w-4 h-4" />
+            <span>Depositar</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setTransactionType('withdrawal')}
+            className={`flex-1 py-2 px-4 rounded-xl font-medium transition-colors flex items-center justify-center space-x-2 ${
+              transactionType === 'withdrawal'
+                ? 'bg-white text-[#E74C3C] shadow-sm'
+                : 'text-[#7F8C8D]'
+            }`}
+          >
+            <Minus className="w-4 h-4" />
+            <span>Retirar</span>
+          </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -140,7 +123,7 @@ export function AddGoalTransactionModal({ goal, onClose, onAddTransaction }: Add
 
           <div>
             <Input
-              label="Valor"
+              label={`Valor a ${transactionType === 'deposit' ? 'Depositar' : 'Retirar'} (R$)`}
               type="number"
               step="0.01"
               min="0.01"
@@ -150,51 +133,40 @@ export function AddGoalTransactionModal({ goal, onClose, onAddTransaction }: Add
               placeholder="0,00"
               required
             />
-            {transactionType === 'withdrawal' && (
-              <p className="text-sm text-gray-600 mt-1">
-                Máximo: {formatCurrency(goal.current_amount)}
+            {transactionType === 'deposit' && parseFloat(amount) > remainingToTarget && (
+              <p className="text-sm text-amber-600 mt-1">
+                ⚠️ Valor excede o restante para a meta: {formatCurrency(remainingToTarget)}
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#2C3E50] mb-2">
-              Descrição (opcional)
-            </label>
+            <label className="block text-sm font-medium text-[#2C3E50] mb-2">Descrição (opcional)</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder={`Ex: ${transactionType === 'deposit' ? 'Economia do mês' : 'Uso emergencial'}`}
+              placeholder={`Ex: ${transactionType === 'deposit' ? 'Economia do mês' : 'Necessidade específica'}`}
               className="w-full px-4 py-3 bg-[#E8F8F5] border border-transparent rounded-2xl text-[#2C3E50] placeholder-[#7F8C8D] focus:outline-none focus:ring-2 focus:ring-[#1DD1A1] focus:border-transparent transition-all duration-200 resize-none"
-              rows={3}
-              maxLength={500}
+              rows={2}
+              maxLength={200}
             />
           </div>
 
-          {/* Preview do Resultado */}
-          {amount && parseFloat(amount) > 0 && (
+          {/* Preview */}
+          {parseFloat(amount) > 0 && (
             <div className="p-4 bg-blue-50 rounded-2xl">
-              <h4 className="font-medium text-[#2C3E50] mb-2">Preview:</h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-[#7F8C8D]">Novo valor atual:</span>
-                  <span className="font-semibold text-[#2C3E50]">{formatCurrency(Math.max(0, newAmount))}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[#7F8C8D]">Novo progresso:</span>
-                  <span className="font-semibold text-[#2C3E50]">{newProgress.toFixed(1)}%</span>
-                </div>
-                {newAmount >= goal.target_amount && (
-                  <div className="flex items-center space-x-2 text-green-600 bg-green-50 p-2 rounded-lg mt-2">
-                    <span className="text-lg">🎉</span>
-                    <span className="font-medium">Objetivo será concluído!</span>
-                  </div>
+              <h4 className="font-medium text-blue-900 mb-2">Previsão após transação</h4>
+              <div className="text-sm text-blue-700 space-y-1">
+                <p>Novo valor: {formatCurrency(newAmount)}</p>
+                <p>Progresso: {newProgress.toFixed(1)}%</p>
+                {transactionType === 'deposit' && newAmount >= goal.target_amount && (
+                  <p className="text-green-600 font-medium">🎉 Meta atingida!</p>
                 )}
               </div>
             </div>
           )}
 
-          <div className="flex space-x-4 pt-4">
+          <div className="modal-actions-sticky">
             <Button 
               type="button" 
               variant="secondary" 
@@ -208,11 +180,8 @@ export function AddGoalTransactionModal({ goal, onClose, onAddTransaction }: Add
               type="submit" 
               className="flex-1"
               loading={loading}
-              style={{ 
-                backgroundColor: transactionType === 'deposit' ? '#1DD1A1' : '#EF4444'
-              }}
             >
-              {transactionType === 'deposit' ? 'Adicionar' : 'Retirar'}
+              {transactionType === 'deposit' ? 'Depositar' : 'Retirar'}
             </Button>
           </div>
         </form>

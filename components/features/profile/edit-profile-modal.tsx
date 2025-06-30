@@ -1,4 +1,3 @@
-// components/features/profile/edit-profile-modal.tsx
 "use client"
 
 import React, { useState } from 'react'
@@ -61,8 +60,8 @@ export function EditProfileModal({ profile, onClose, onSave, onUploadAvatar, onR
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end justify-center z-50">
-      <div className="bg-white rounded-t-3xl w-full max-w-md p-6 animate-slide-up max-h-[90vh] overflow-y-auto">
+    <div className="modal-container">
+      <div className="modal-content-with-nav">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-[#2C3E50]">Editar Perfil</h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
@@ -163,7 +162,7 @@ export function EditProfileModal({ profile, onClose, onSave, onUploadAvatar, onR
             </div>
           </div>
 
-          <div className="flex space-x-4 pt-4">
+          <div className="modal-actions-sticky">
             <Button type="button" variant="secondary" onClick={onClose} className="flex-1" disabled={loading}>
               Cancelar
             </Button>

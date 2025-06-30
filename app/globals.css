@@ -29,7 +29,7 @@
     /* Esta classe 'border-border' não é padrão.
        Se você a definiu em seu `tailwind.config.js`, está correto.
        Caso contrário, pode precisar ser @apply border-gray-200 ou similar.
-       Mantive como estava no seu original. */
+       Manteve como estava no seu original. */
     @apply border-border;
   }
 
@@ -61,6 +61,58 @@
 
   .animate-slide-up {
     animation: slideUp 0.3s ease-out;
+  }
+
+  /* ----------------------------------------------------------------
+     Classes para modais com suporte a safe-area
+  ----------------------------------------------------------------- */
+  .modal-container {
+    @apply fixed inset-0 bg-black/50 flex items-end justify-center z-50;
+  }
+
+  .modal-content {
+    @apply bg-white rounded-t-3xl w-full max-w-md animate-slide-up max-h-[90vh] overflow-y-auto;
+    padding: 1.5rem 1.5rem calc(1.5rem + env(safe-area-inset-bottom)) 1.5rem;
+  }
+
+  .modal-content-with-nav {
+    @apply bg-white rounded-t-3xl w-full max-w-md animate-slide-up max-h-[90vh] overflow-y-auto;
+    padding: 1.5rem 1.5rem calc(1.5rem + max(env(safe-area-inset-bottom), 5rem)) 1.5rem;
+  }
+
+  .modal-actions {
+    @apply flex space-x-4 pt-4;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .modal-actions-sticky {
+    @apply flex space-x-4 pt-4 sticky bottom-0 bg-white;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    margin: 0 -1.5rem -1.5rem -1.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    border-top: 1px solid #f3f4f6;
+  }
+}
+
+/* ----------------------------------------------------------------
+   Utilitários para safe-area
+----------------------------------------------------------------- */
+@layer utilities {
+  .pb-safe {
+    padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+  }
+
+  .mb-safe {
+    margin-bottom: max(1.25rem, env(safe-area-inset-bottom));
+  }
+
+  .pb-safe-nav {
+    padding-bottom: max(5rem, calc(5rem + env(safe-area-inset-bottom)));
+  }
+
+  .mb-safe-nav {
+    margin-bottom: max(5rem, calc(5rem + env(safe-area-inset-bottom)));
   }
 }
 

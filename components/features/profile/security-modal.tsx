@@ -1,4 +1,3 @@
-// components/features/profile/security-modal.tsx
 "use client"
 
 import React, { useState } from 'react'
@@ -63,8 +62,8 @@ export function SecurityModal({ onClose, onChangePassword }: SecurityModalProps)
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end justify-center z-50">
-      <div className="bg-white rounded-t-3xl w-full max-w-md p-6 animate-slide-up max-h-[90vh] overflow-y-auto">
+    <div className="modal-container">
+      <div className="modal-content-with-nav">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-[#2C3E50]">Segurança</h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
@@ -146,7 +145,7 @@ export function SecurityModal({ onClose, onChangePassword }: SecurityModalProps)
               />
             </div>
 
-            <div className="flex space-x-4 pt-4">
+            <div className="modal-actions-sticky">
               <Button type="button" variant="secondary" onClick={onClose} className="flex-1" disabled={loading}>
                 Cancelar
               </Button>
@@ -160,32 +159,40 @@ export function SecurityModal({ onClose, onChangePassword }: SecurityModalProps)
             <div className="p-4 bg-blue-50 rounded-2xl">
               <div className="flex items-center space-x-3 mb-3">
                 <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                  <span className="text-green-600 text-sm font-bold">A</span>
+                  <span className="text-green-600 text-xs font-bold">✓</span>
                 </div>
                 <div>
-                  <p className="font-medium text-[#2C3E50]">Sessão Atual</p>
-                  <p className="text-sm text-[#7F8C8D]">Web • Ativo agora</p>
+                  <h4 className="font-medium text-blue-900">Sessão Atual</h4>
+                  <p className="text-sm text-blue-700">Este dispositivo • Agora</p>
                 </div>
               </div>
-              <p className="text-xs text-[#7F8C8D]">Esta é a sessão que você está usando agora</p>
+              <p className="text-xs text-blue-600 bg-blue-100 px-3 py-1 rounded-full inline-block">
+                Ativo
+              </p>
             </div>
 
-            <Button
-              variant="secondary"
-              className="w-full flex items-center justify-center space-x-2 text-red-500 hover:text-red-600"
-              onClick={() => {
-                logout()
-                onClose()
-              }}
-            >
-              <LogOut className="w-4 h-4" />
-              <span>Sair de Todas as Sessões</span>
-            </Button>
-
-            <div className="text-center pt-4">
-              <p className="text-xs text-[#7F8C8D]">
-                Sair de todas as sessões irá desconectar você de todos os dispositivos
+            <div className="p-4 bg-gray-50 rounded-2xl">
+              <h4 className="font-medium text-[#2C3E50] mb-2">Gerenciar Sessões</h4>
+              <p className="text-sm text-[#7F8C8D] mb-4">
+                Para sua segurança, você pode encerrar todas as outras sessões ativas em outros dispositivos.
               </p>
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => {
+                  // TODO: Implementar logout de outras sessões
+                  console.log('Encerrar outras sessões')
+                }}
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Encerrar Outras Sessões
+              </Button>
+            </div>
+
+            <div className="modal-actions-sticky">
+              <Button onClick={onClose} className="w-full">
+                Fechar
+              </Button>
             </div>
           </div>
         )}

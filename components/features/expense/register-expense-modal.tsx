@@ -70,8 +70,8 @@ export function RegisterExpenseModal({ categories, onClose, onSubmit }: Register
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end justify-center z-50">
-      <div className="bg-white rounded-t-3xl w-full max-w-md p-6 animate-slide-up max-h-[90vh] overflow-y-auto">
+    <div className="modal-container">
+      <div className="modal-content-with-nav">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-[#2C3E50]">Nova Despesa</h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
@@ -123,7 +123,7 @@ export function RegisterExpenseModal({ categories, onClose, onSubmit }: Register
                   <div
                     className="h-2 rounded-full transition-all duration-300"
                     style={{ 
-                      width: `${Math.min((selectedCategory.allocated_amount - selectedCategory.current_balance) / selectedCategory.allocated_amount * 100, 100)}%`,
+                      width: `${Math.min(((selectedCategory.allocated_amount - selectedCategory.current_balance) / selectedCategory.allocated_amount) * 100, 100)}%`,
                       backgroundColor: selectedCategory.color
                     }}
                   />
@@ -170,7 +170,7 @@ export function RegisterExpenseModal({ categories, onClose, onSubmit }: Register
             </p>
           </div>
 
-          <div className="flex space-x-4 pt-4">
+          <div className="modal-actions-sticky">
             <Button 
               type="button" 
               variant="secondary" 

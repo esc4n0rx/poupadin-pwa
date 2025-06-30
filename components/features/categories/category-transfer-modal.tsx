@@ -73,7 +73,7 @@ export function CategoryTransferModal({ categories, onClose, onTransfer }: Categ
       })
       onClose()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao realizar transferência')
+      setError(err instanceof Error ? err.message : 'Erro ao transferir valor')
     } finally {
       setLoading(false)
     }
@@ -84,13 +84,9 @@ export function CategoryTransferModal({ categories, onClose, onTransfer }: Categ
     if (error) setError('')
   }
 
-  // Filtrar categorias para evitar duplicação nas opções
-  const fromOptions = categories.filter(cat => cat.is_active && cat.current_balance > 0)
-  const toOptions = categories.filter(cat => cat.is_active && cat.id !== formData.from_category_id)
-
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end justify-center z-50">
-      <div className="bg-white rounded-t-3xl w-full max-w-md p-6 animate-slide-up max-h-[90vh] overflow-y-auto">
+    <div className="modal-container">
+      <div className="modal-content-with-nav">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-[#2C3E50]">Transferir entre Categorias</h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
@@ -105,7 +101,6 @@ export function CategoryTransferModal({ categories, onClose, onTransfer }: Categ
             </div>
           )}
 
-          {/* Categoria de Origem */}
           <div>
             <label className="block text-sm font-medium text-[#2C3E50] mb-2">De (Origem)</label>
             <select
@@ -115,7 +110,7 @@ export function CategoryTransferModal({ categories, onClose, onTransfer }: Categ
               required
             >
               <option value="">Selecione a categoria de origem</option>
-              {fromOptions.map((category) => (
+              {categories.filter(cat => cat.current_balance > 0).map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name} - {formatCurrency(category.current_balance)} disponível
                 </option>
@@ -123,35 +118,6 @@ export function CategoryTransferModal({ categories, onClose, onTransfer }: Categ
             </select>
           </div>
 
-          {/* Seta Visual */}
-          {fromCategory && (
-            <div className="flex justify-center">
-              <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-2xl">
-                <div className="flex items-center space-x-2">
-                  <div 
-                    className="w-4 h-4 rounded-full" 
-                    style={{ backgroundColor: fromCategory.color }}
-                  />
-                  <span className="text-sm font-medium text-[#2C3E50]">{fromCategory.name}</span>
-                </div>
-                <ArrowRight className="w-5 h-5 text-[#1DD1A1]" />
-                <div className="flex items-center space-x-2">
-                  {toCategory && (
-                    <>
-                      <div 
-                        className="w-4 h-4 rounded-full" 
-                        style={{ backgroundColor: toCategory.color }}
-                      />
-                      <span className="text-sm font-medium text-[#2C3E50]">{toCategory.name}</span>
-                    </>
-                  )}
-                  {!toCategory && <span className="text-sm text-[#7F8C8D]">Selecione destino</span>}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Categoria de Destino */}
           <div>
             <label className="block text-sm font-medium text-[#2C3E50] mb-2">Para (Destino)</label>
             <select
@@ -161,15 +127,44 @@ export function CategoryTransferModal({ categories, onClose, onTransfer }: Categ
               required
             >
               <option value="">Selecione a categoria de destino</option>
-              {toOptions.map((category) => (
+              {categories.filter(cat => cat.id !== formData.from_category_id).map((category) => (
                 <option key={category.id} value={category.id}>
-                  {category.name} - {formatCurrency(category.current_balance)} atual
+                  {category.name}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Valor da Transferência */}
+          {fromCategory && toCategory && (
+            <div className="p-4 bg-gray-50 rounded-2xl">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <div 
+                    className="w-4 h-4 rounded-full" 
+                    style={{ backgroundColor: fromCategory.color }}
+                  />
+                  <div>
+                    <p className="font-medium text-[#2C3E50] text-sm">{fromCategory.name}</p>
+                    <p className="text-xs text-[#7F8C8D]">{formatCurrency(fromCategory.current_balance)}</p>
+                  </div>
+                </div>
+                
+                <ArrowRight className="w-5 h-5 text-[#7F8C8D]" />
+                
+                <div className="flex items-center space-x-2">
+                  <div 
+                    className="w-4 h-4 rounded-full" 
+                    style={{ backgroundColor: toCategory.color }}
+                  />
+                  <div>
+                    <p className="font-medium text-[#2C3E50] text-sm">{toCategory.name}</p>
+                    <p className="text-xs text-[#7F8C8D]">{formatCurrency(toCategory.current_balance)}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div>
             <Input
               label="Valor da Transferência (R$)"
@@ -182,14 +177,13 @@ export function CategoryTransferModal({ categories, onClose, onTransfer }: Categ
               placeholder="0,00"
               required
             />
-            {fromCategory && (
-              <p className="text-sm text-[#7F8C8D] mt-1">
-                Máximo disponível: {formatCurrency(fromCategory.current_balance)}
+            {fromCategory && transferAmount > fromCategory.current_balance && (
+              <p className="text-sm text-red-500 mt-1">
+                Valor excede o saldo disponível: {formatCurrency(fromCategory.current_balance)}
               </p>
             )}
           </div>
 
-          {/* Descrição */}
           <div>
             <label className="block text-sm font-medium text-[#2C3E50] mb-2">Descrição</label>
             <textarea
@@ -198,7 +192,6 @@ export function CategoryTransferModal({ categories, onClose, onTransfer }: Categ
               placeholder="Ex: Remanejamento para objetivo específico"
               className="w-full px-4 py-3 bg-[#E8F8F5] border border-transparent rounded-2xl text-[#2C3E50] placeholder-[#7F8C8D] focus:outline-none focus:ring-2 focus:ring-[#1DD1A1] focus:border-transparent transition-all duration-200 resize-none"
               rows={3}
-              minLength={3}
               maxLength={200}
               required
             />
@@ -207,33 +200,7 @@ export function CategoryTransferModal({ categories, onClose, onTransfer }: Categ
             </p>
           </div>
 
-          {/* Preview da Transferência */}
-          {fromCategory && toCategory && transferAmount > 0 && (
-            <div className="p-4 bg-blue-50 rounded-2xl">
-              <h4 className="font-medium text-[#2C3E50] mb-3">Preview da Transferência:</h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-[#7F8C8D]">{fromCategory.name} (atual):</span>
-                  <span className="font-medium text-[#2C3E50]">{formatCurrency(fromCategory.current_balance)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[#7F8C8D]">{fromCategory.name} (depois):</span>
-                  <span className="font-medium text-red-600">{formatCurrency(fromCategory.current_balance - transferAmount)}</span>
-                </div>
-                <div className="border-t border-gray-200 my-2"></div>
-                <div className="flex justify-between">
-                  <span className="text-[#7F8C8D]">{toCategory.name} (atual):</span>
-                  <span className="font-medium text-[#2C3E50]">{formatCurrency(toCategory.current_balance)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[#7F8C8D]">{toCategory.name} (depois):</span>
-                  <span className="font-medium text-green-600">{formatCurrency(toCategory.current_balance + transferAmount)}</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="flex space-x-4 pt-4">
+          <div className="modal-actions-sticky">
             <Button 
               type="button" 
               variant="secondary" 
@@ -248,7 +215,7 @@ export function CategoryTransferModal({ categories, onClose, onTransfer }: Categ
               className="flex-1"
               loading={loading}
             >
-              Transferir {transferAmount > 0 && `${formatCurrency(transferAmount)}`}
+              Transferir
             </Button>
           </div>
         </form>
