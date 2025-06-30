@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react'
-import { X } from 'lucide-react'
+import { X, Camera, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { AvatarUpload } from './avatar-upload'
@@ -45,132 +45,185 @@ export function EditProfileModal({ profile, onClose, onSave, onUploadAvatar, onR
     }
   }
 
-  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (field: keyof typeof formData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }))
+    if (error) setError('')
   }
 
-  const handlePrivacyChange = (field: keyof typeof formData.privacy_settings) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePrivacyChange = (field: keyof typeof formData.privacy_settings) => {
     setFormData(prev => ({
       ...prev,
       privacy_settings: {
         ...prev.privacy_settings,
-        [field]: e.target.checked
+        [field]: !prev.privacy_settings[field]
       }
     }))
   }
 
   return (
-    <div className="modal-container">
-      <div className="modal-content-with-nav">
-        <div className="flex items-center justify-between mb-6">
+    <div className="modal-overlay">
+      <div className="modal-popup">
+        <div className="modal-header">
           <h2 className="text-xl font-bold text-[#2C3E50]">Editar Perfil</h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
             <X className="w-5 h-5 text-[#7F8C8D]" />
           </button>
         </div>
 
-        {/* Avatar Upload */}
-        <div className="mb-6">
-          <AvatarUpload
-            currentAvatar={profile.avatar_url}
-            onUpload={onUploadAvatar}
-            onRemove={onRemoveAvatar}
-            loading={loading}
-          />
+        <div className="modal-body">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-xl">
+                <p className="text-red-600 text-sm">{error}</p>
+              </div>
+            )}
+
+            {/* Avatar Section */}
+            <div className="text-center">
+              <div className="relative inline-block mb-4">
+                {profile.avatar_url ? (
+                  <img
+                    src={profile.avatar_url}
+                    alt="Avatar"
+                    className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg"
+                  />
+                ) : (
+                  <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                    <User className="w-8 h-8 text-white" />
+                  </div>
+                )}
+                <AvatarUpload onUpload={onUploadAvatar} onRemove={onRemoveAvatar} />
+                <button
+                  type="button"
+                  className="absolute bottom-0 right-0 w-6 h-6 bg-[#1DD1A1] rounded-full flex items-center justify-center shadow-lg hover:bg-[#00A085] transition-colors"
+                  onClick={() => {
+                    // You may want to expose a ref or callback from AvatarUpload to trigger file input
+                    // For now, this is a placeholder for triggering the upload dialog
+                  }}
+                >
+                  <Camera className="w-3 h-3 text-white" />
+                </button>
+              </div>
+              <p className="text-sm text-[#7F8C8D]">Toque para alterar foto</p>
+            </div>
+
+            {/* Basic Info */}
+            <div className="space-y-4">
+              <div>
+                <Input
+                  label="Bio"
+                  value={formData.bio}
+                  onChange={handleChange('bio')}
+                  placeholder="Conte um pouco sobre você..."
+                  maxLength={200}
+                />
+                <p className="text-xs text-[#7F8C8D] mt-1">
+                  {formData.bio.length}/200 caracteres
+                </p>
+              </div>
+
+              <div>
+                <Input
+                  label="Localização"
+                  value={formData.location}
+                  onChange={handleChange('location')}
+                  placeholder="Ex: São Paulo, SP"
+                />
+              </div>
+
+              <div>
+                <Input
+                  label="Website"
+                  type="url"
+                  value={formData.website}
+                  onChange={handleChange('website')}
+                  placeholder="https://seusite.com"
+                />
+              </div>
+
+              <div>
+                <Input
+                  label="Telefone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={handleChange('phone')}
+                  placeholder="(11) 99999-9999"
+                />
+              </div>
+            </div>
+
+            {/* Privacy Settings */}
+            <div>
+              <h3 className="text-sm font-medium text-[#2C3E50] mb-3">Configurações de Privacidade</h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-[#2C3E50]">Perfil público</span>
+                  <button
+                    type="button"
+                    onClick={() => handlePrivacyChange('profile_visible')}
+                    className={`w-12 h-6 rounded-full transition-colors ${
+                      formData.privacy_settings.profile_visible ? 'bg-[#1DD1A1]' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                      formData.privacy_settings.profile_visible ? 'translate-x-6' : 'translate-x-0.5'
+                    }`} />
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-[#2C3E50]">Email visível</span>
+                  <button
+                    type="button"
+                    onClick={() => handlePrivacyChange('email_visible')}
+                    className={`w-12 h-6 rounded-full transition-colors ${
+                      formData.privacy_settings.email_visible ? 'bg-[#1DD1A1]' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                      formData.privacy_settings.email_visible ? 'translate-x-6' : 'translate-x-0.5'
+                    }`} />
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-[#2C3E50]">Telefone visível</span>
+                  <button
+                    type="button"
+                    onClick={() => handlePrivacyChange('phone_visible')}
+                    className={`w-12 h-6 rounded-full transition-colors ${
+                      formData.privacy_settings.phone_visible ? 'bg-[#1DD1A1]' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                      formData.privacy_settings.phone_visible ? 'translate-x-6' : 'translate-x-0.5'
+                    }`} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-xl">
-              <p className="text-red-600 text-sm">{error}</p>
-            </div>
-          )}
-
-          <div>
-            <label className="block text-sm font-medium text-[#2C3E50] mb-2">Bio</label>
-            <textarea
-              value={formData.bio}
-              onChange={handleChange('bio')}
-              placeholder="Conte um pouco sobre você..."
-              className="w-full px-4 py-3 bg-[#E8F8F5] border border-transparent rounded-2xl text-[#2C3E50] placeholder-[#7F8C8D] focus:outline-none focus:ring-2 focus:ring-[#1DD1A1] focus:border-transparent transition-all duration-200 resize-none"
-              rows={3}
-              maxLength={500}
-            />
-            <p className="text-xs text-[#7F8C8D] mt-1">{formData.bio.length}/500 caracteres</p>
-          </div>
-
-          <div>
-            <Input
-              label="Localização"
-              value={formData.location}
-              onChange={handleChange('location')}
-              placeholder="Ex: São Paulo, SP - Brasil"
-            />
-          </div>
-
-          <div>
-            <Input
-              label="Website"
-              type="url"
-              value={formData.website}
-              onChange={handleChange('website')}
-              placeholder="https://seusite.com"
-            />
-          </div>
-
-          <div>
-            <Input
-              label="Telefone"
-              type="tel"
-              value={formData.phone}
-              onChange={handleChange('phone')}
-              placeholder="+55 11 99999-9999"
-            />
-          </div>
-
-          {/* Configurações de Privacidade */}
-          <div>
-            <h3 className="text-sm font-medium text-[#2C3E50] mb-3">Configurações de Privacidade</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[#2C3E50]">Perfil visível publicamente</span>
-                <input
-                  type="checkbox"
-                  checked={formData.privacy_settings.profile_visible}
-                  onChange={handlePrivacyChange('profile_visible')}
-                  className="w-4 h-4 text-[#1DD1A1] bg-gray-100 border-gray-300 rounded focus:ring-[#1DD1A1] focus:ring-2"
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[#2C3E50]">Email visível no perfil</span>
-                <input
-                  type="checkbox"
-                  checked={formData.privacy_settings.email_visible}
-                  onChange={handlePrivacyChange('email_visible')}
-                  className="w-4 h-4 text-[#1DD1A1] bg-gray-100 border-gray-300 rounded focus:ring-[#1DD1A1] focus:ring-2"
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[#2C3E50]">Telefone visível no perfil</span>
-                <input
-                  type="checkbox"
-                  checked={formData.privacy_settings.phone_visible}
-                  onChange={handlePrivacyChange('phone_visible')}
-                  className="w-4 h-4 text-[#1DD1A1] bg-gray-100 border-gray-300 rounded focus:ring-[#1DD1A1] focus:ring-2"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="modal-actions-sticky">
-            <Button type="button" variant="secondary" onClick={onClose} className="flex-1" disabled={loading}>
-              Cancelar
-            </Button>
-            <Button type="submit" className="flex-1" loading={loading}>
-              Salvar Alterações
-            </Button>
-          </div>
-        </form>
+        <div className="modal-footer">
+          <Button 
+            type="button" 
+            variant="secondary" 
+            onClick={onClose} 
+            className="flex-1"
+            disabled={loading}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            type="submit" 
+            onClick={handleSubmit}
+            className="flex-1"
+            loading={loading}
+          >
+            Salvar Alterações
+          </Button>
+        </div>
       </div>
     </div>
   )
