@@ -22,7 +22,7 @@ export function BottomNavigation() {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-3">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-3 z-[40]">
       <div className="flex items-center justify-between">
         {navigationItems.map((item) => {
           const isActive = pathname === item.href

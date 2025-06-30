@@ -64,29 +64,29 @@
   }
 
   /* ----------------------------------------------------------------
-     Classes para modais com suporte a safe-area
+     Classes para modais com suporte a safe-area - CORRIGIDO Z-INDEX
   ----------------------------------------------------------------- */
   .modal-container {
-    @apply fixed inset-0 bg-black/50 flex items-end justify-center z-50;
+    @apply fixed inset-0 bg-black/50 flex items-end justify-center z-[60];
   }
 
   .modal-content {
-    @apply bg-white rounded-t-3xl w-full max-w-md animate-slide-up max-h-[90vh] overflow-y-auto;
+    @apply bg-white rounded-t-3xl w-full max-w-md animate-slide-up max-h-[90vh] overflow-y-auto z-[61];
     padding: 1.5rem 1.5rem calc(1.5rem + env(safe-area-inset-bottom)) 1.5rem;
   }
 
   .modal-content-with-nav {
-    @apply bg-white rounded-t-3xl w-full max-w-md animate-slide-up max-h-[90vh] overflow-y-auto;
+    @apply bg-white rounded-t-3xl w-full max-w-md animate-slide-up max-h-[90vh] overflow-y-auto z-[61];
     padding: 1.5rem 1.5rem calc(1.5rem + max(env(safe-area-inset-bottom), 5rem)) 1.5rem;
   }
 
   .modal-actions {
-    @apply flex space-x-4 pt-4;
+    @apply flex space-x-4 pt-4 z-[62];
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 
   .modal-actions-sticky {
-    @apply flex space-x-4 pt-4 sticky bottom-0 bg-white;
+    @apply flex space-x-4 pt-4 sticky bottom-0 bg-white z-[62];
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
     margin: 0 -1.5rem -1.5rem -1.5rem;
     padding-left: 1.5rem;
@@ -113,6 +113,23 @@
 
   .mb-safe-nav {
     margin-bottom: max(5rem, calc(5rem + env(safe-area-inset-bottom)));
+  }
+
+  /* Utilitários de z-index específicos para hierarquia de elementos */
+  .z-navigation {
+    z-index: 40;
+  }
+
+  .z-modal {
+    z-index: 60;
+  }
+
+  .z-modal-content {
+    z-index: 61;
+  }
+
+  .z-modal-actions {
+    z-index: 62;
   }
 }
 
