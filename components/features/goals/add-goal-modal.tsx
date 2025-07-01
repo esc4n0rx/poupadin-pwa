@@ -1,10 +1,11 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { CreateGoalRequest } from '@/types/goals'
+import { useUIStore } from '@/hooks/use-ui-store'
 
 interface AddGoalModalProps {
   onClose: () => void
@@ -33,6 +34,13 @@ export function AddGoalModal({ onClose, onAdd }: AddGoalModalProps) {
   })
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    useUIStore.getState().openModal();
+    return () => {
+      useUIStore.getState().closeModal();
+    };
+  }, []);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}

@@ -4,21 +4,22 @@ import { Home, BarChart3, Receipt, Grid3X3, User } from "lucide-react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { useUIStore } from '@/hooks/use-ui-store'
 
 const navigationItems = [
   { href: "/dashboard", icon: Home, label: "Início" },
   { href: "/analytics", icon: BarChart3, label: "Objetivos" },
-  { href: "/expense", icon: Receipt, label: "" }, // Nova rota central
+  { href: "/expense", icon: Receipt, label: "" },
   { href: "/categories", icon: Grid3X3, label: "Categorias" },
   { href: "/profile", icon: User, label: "Perfil" },
-]
+];
 
 export function BottomNavigation() {
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const isModalOpen = useUIStore((state) => state.isModalOpen);
 
-  // Se estivermos na rota nativa, não renderizar este componente
-  if (pathname === '/app') {
-    return null
+  if (isModalOpen || pathname === '/app') {
+    return null;
   }
 
   return (
@@ -49,7 +50,6 @@ export function BottomNavigation() {
         })}
       </div>
       
-      {/* Link para versão nativa */}
       <div className="absolute top-2 right-2">
         <Link href="/app" className="text-xs text-gray-500 hover:text-[#1DD1A1]">
           Modo Nativo

@@ -3,6 +3,7 @@
 import { Home, BarChart3, Receipt, Grid3X3, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Screen } from "@/hooks/use-native-navigation"
+import { useUIStore } from '@/hooks/use-ui-store'
 
 interface NavigationItem {
   screen: Screen
@@ -13,7 +14,7 @@ interface NavigationItem {
 const navigationItems: NavigationItem[] = [
   { screen: 'dashboard', icon: Home, label: 'Início' },
   { screen: 'goals', icon: BarChart3, label: 'Objetivos' },
-  { screen: 'expense', icon: Receipt, label: '' }, // Central button
+  { screen: 'expense', icon: Receipt, label: '' }, 
   { screen: 'categories', icon: Grid3X3, label: 'Categorias' },
   { screen: 'profile', icon: User, label: 'Perfil' },
 ]
@@ -25,15 +26,19 @@ interface NativeNavigationProps {
 }
 
 export function NativeNavigation({ currentScreen, onNavigate, isTransitioning }: NativeNavigationProps) {
+  const isModalOpen = useUIStore((state) => state.isModalOpen);
+
   const handleItemClick = (screen: Screen) => {
     if (!isTransitioning) {
       onNavigate(screen)
-      
-      // Haptic feedback para dispositivos que suportam
       if ('vibrate' in navigator) {
         navigator.vibrate(50)
       }
     }
+  }
+  
+  if (isModalOpen) {
+    return null;
   }
 
   return (
@@ -57,8 +62,6 @@ export function NativeNavigation({ currentScreen, onNavigate, isTransitioning }:
                 )}
               >
                 <item.icon className="w-7 h-7 text-white" />
-                
-                {/* Indicador de ativo para botão central */}
                 {isActive && (
                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center">
                     <div className="w-2 h-2 bg-[#1DD1A1] rounded-full" />
@@ -88,13 +91,10 @@ export function NativeNavigation({ currentScreen, onNavigate, isTransitioning }:
                     isActive ? "text-[#1DD1A1]" : "text-[#7F8C8D]"
                   )} 
                 />
-                
-                {/* Indicador de notificação (exemplo) */}
                 {item.screen === 'profile' && (
                   <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
                 )}
               </div>
-              
               <span 
                 className={cn(
                   "text-xs font-medium transition-colors duration-300",
@@ -103,8 +103,6 @@ export function NativeNavigation({ currentScreen, onNavigate, isTransitioning }:
               >
                 {item.label}
               </span>
-              
-              {/* Indicador inferior */}
               {isActive && (
                 <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-[#1DD1A1] rounded-full" />
               )}
