@@ -74,6 +74,8 @@ export function AddGoalModal({ onClose, onAdd }: AddGoalModalProps) {
       onClose()
     } catch (error) {
       console.error('Erro ao criar objetivo:', error)
+      // Aqui você poderia definir um erro genérico para o formulário
+      setErrors({ form: 'Ocorreu um erro ao criar o objetivo. Tente novamente.' });
     } finally {
       setLoading(false)
     }
@@ -178,6 +180,7 @@ export function AddGoalModal({ onClose, onAdd }: AddGoalModalProps) {
                 ))}
               </div>
             </div>
+             {errors.form && <p className="text-sm text-red-500 text-center">{errors.form}</p>}
           </form>
         </div>
 

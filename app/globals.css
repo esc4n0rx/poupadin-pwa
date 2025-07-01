@@ -97,7 +97,7 @@
   .modal-footer {
     @apply flex space-x-4 p-6 pt-4 border-t border-gray-100 flex-shrink-0;
   }
-
+}
   /* ----------------------------------------------------------------
      Classes para modais com suporte a safe-area - VERSÃO ANTIGA (mantida para compatibilidade)
   ----------------------------------------------------------------- */
@@ -128,7 +128,7 @@
     padding-right: 1.5rem;
     border-top: 1px solid #f3f4f6;
   }
-}
+
 
 /* ----------------------------------------------------------------
    Utilitários para safe-area

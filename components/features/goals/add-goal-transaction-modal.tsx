@@ -71,7 +71,6 @@ export function AddGoalTransactionModal({ goal, onClose, onAddTransaction }: Add
         </div>
 
         <div className="modal-body">
-          {/* Goal Summary */}
           <div className="p-4 bg-gray-50 rounded-2xl mb-6">
             <div className="flex items-center space-x-3 mb-3">
               <div 
@@ -87,7 +86,6 @@ export function AddGoalTransactionModal({ goal, onClose, onAddTransaction }: Add
             </div>
           </div>
 
-          {/* Transaction Type Toggle */}
           <div className="flex space-x-1 mb-6 bg-gray-100 rounded-2xl p-1">
             <button
               type="button"
@@ -158,7 +156,6 @@ export function AddGoalTransactionModal({ goal, onClose, onAddTransaction }: Add
               </p>
             </div>
 
-            {/* Preview */}
             {amount && parseFloat(amount) > 0 && (
               <div className="p-4 bg-blue-50 rounded-2xl">
                 <h4 className="font-medium text-blue-900 mb-2">Prévia da Transação</h4>
