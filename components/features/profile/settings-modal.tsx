@@ -1,8 +1,9 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { X, Bell, Smartphone, Moon, Sun, Globe } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useUIStore } from '@/hooks/use-ui-store'
 
 interface SettingsModalProps {
   onClose: () => void
@@ -26,6 +27,13 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
     biometrics: false,
     autoBackup: true,
   })
+
+  useEffect(() => {
+        useUIStore.getState().openModal();
+        return () => {
+          useUIStore.getState().closeModal();
+        };
+      }, []);
 
   const handleToggle = (key: keyof AppSettings) => {
     setSettings(prev => ({ ...prev, [key]: !prev[key] }))
