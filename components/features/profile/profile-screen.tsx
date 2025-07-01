@@ -26,7 +26,9 @@ export function ProfileScreen() {
   } = useProfile()
   
   const [activeModal, setActiveModal] = useState<'edit' | 'security' | 'settings' | 'about' | null>(null)
+  
 
+  
   const handleLogout = () => {
     logout()
   }

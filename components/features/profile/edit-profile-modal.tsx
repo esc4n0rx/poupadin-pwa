@@ -1,11 +1,12 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { X, Camera, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { AvatarUpload } from './avatar-upload'
 import { UserProfile, UpdateProfileRequest } from '@/types/profile'
+import { useUIStore } from '@/hooks/use-ui-store'
 
 interface EditProfileModalProps {
   profile: UserProfile
@@ -29,6 +30,13 @@ export function EditProfileModal({ profile, onClose, onSave, onUploadAvatar, onR
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+        useUIStore.getState().openModal();
+        return () => {
+          useUIStore.getState().closeModal();
+        };
+      }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

@@ -1,11 +1,12 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { X, Plus, Minus, Wallet, TrendingDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Goal, GoalTransactionRequest } from '@/types/goals'
 import { formatCurrency } from '@/lib/utils'
+import { useUIStore } from '@/hooks/use-ui-store'
 
 interface AddGoalTransactionModalProps {
   goal: Goal
@@ -19,6 +20,13 @@ export function AddGoalTransactionModal({ goal, onClose, onAddTransaction }: Add
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+      useUIStore.getState().openModal();
+      return () => {
+        useUIStore.getState().closeModal();
+      };
+    }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

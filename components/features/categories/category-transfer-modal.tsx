@@ -1,12 +1,13 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { X, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { BudgetCategory } from '@/types/expense'
 import { CategoryTransferRequest } from '@/types/categories'
 import { formatCurrency } from '@/lib/utils'
+import { useUIStore } from '@/hooks/use-ui-store'
 
 interface CategoryTransferModalProps {
   categories: BudgetCategory[]
@@ -23,6 +24,13 @@ export function CategoryTransferModal({ categories, onClose, onTransfer }: Categ
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+        useUIStore.getState().openModal();
+        return () => {
+          useUIStore.getState().closeModal();
+        };
+      }, []);
 
   const fromCategory = categories.find(cat => cat.id === formData.from_category_id)
   const toCategory = categories.find(cat => cat.id === formData.to_category_id)

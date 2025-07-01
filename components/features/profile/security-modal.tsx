@@ -1,9 +1,10 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { X, Shield, Eye, EyeOff, Lock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useUIStore } from '@/hooks/use-ui-store'
 
 interface SecurityModalProps {
   onClose: () => void
@@ -23,6 +24,13 @@ export function SecurityModal({ onClose, onChangePassword }: SecurityModalProps)
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+        useUIStore.getState().openModal();
+        return () => {
+          useUIStore.getState().closeModal();
+        };
+      }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

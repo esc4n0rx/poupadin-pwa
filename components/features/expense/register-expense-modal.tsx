@@ -1,11 +1,12 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { BudgetCategory, CreateExpenseRequest } from '@/types/expense'
 import { formatCurrency } from '@/lib/utils'
+import { useUIStore } from '@/hooks/use-ui-store'
 
 interface RegisterExpenseModalProps {
   categories: BudgetCategory[]
@@ -21,6 +22,13 @@ export function RegisterExpenseModal({ categories, onClose, onSubmit }: Register
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+        useUIStore.getState().openModal();
+        return () => {
+          useUIStore.getState().closeModal();
+        };
+      }, []);
 
   const selectedCategory = categories.find(cat => cat.id === formData.category_id)
 
