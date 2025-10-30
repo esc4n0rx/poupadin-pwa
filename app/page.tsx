@@ -1,15 +1,42 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
 import { Loader2, PiggyBank, TrendingUp, Shield, Smartphone } from "lucide-react"
+
+const onboardingSlides = [
+  {
+    icon: PiggyBank,
+    title: "Controle Total",
+    description: "Registre receitas e despesas facilmente e tenha visão completa do seu dinheiro",
+    color: "from-blue-500 to-cyan-500"
+  },
+  {
+    icon: TrendingUp,
+    title: "Estatísticas",
+    description: "Visualize gráficos e relatórios para entender seus hábitos financeiros",
+    color: "from-green-500 to-emerald-500"
+  },
+  {
+    icon: Shield,
+    title: "Segurança",
+    description: "Seus dados estão protegidos com criptografia de ponta a ponta",
+    color: "from-purple-500 to-pink-500"
+  },
+  {
+    icon: Smartphone,
+    title: "PWA",
+    description: "Funciona como app no seu celular, mesmo offline",
+    color: "from-orange-500 to-red-500"
+  }
+]
 
 export default function Home() {
   const router = useRouter()
   const { user, loading } = useAuth()
+  const [currentSlide, setCurrentSlide] = useState(0)
 
   // Se já estiver autenticado, redirecionar para home
   useEffect(() => {
@@ -17,6 +44,15 @@ export default function Home() {
       router.push("/home")
     }
   }, [user, loading, router])
+
+  // Auto-advance slides
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % onboardingSlides.length)
+    }, 3000) // Muda a cada 3 segundos
+
+    return () => clearInterval(timer)
+  }, [])
 
   if (loading) {
     return (
@@ -31,90 +67,70 @@ export default function Home() {
     return null
   }
 
+  const CurrentIcon = onboardingSlides[currentSlide].icon
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="container mx-auto px-4 py-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">PoupaDin</h1>
-        <div className="space-x-2">
-          <Link href="/login">
-            <Button variant="ghost">Entrar</Button>
-          </Link>
-          <Link href="/signup">
-            <Button>Cadastrar</Button>
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Logo */}
+      <div className="p-6 text-center">
+        <h1 className="text-3xl font-bold text-foreground">PoupaDin</h1>
+      </div>
 
-      {/* Hero Section */}
-      <main className="container mx-auto px-4 py-16">
-        <div className="max-w-3xl mx-auto text-center space-y-8">
-          <div className="space-y-4">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-              Controle suas finanças de forma inteligente
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              Gerencie seu dinheiro, acompanhe gastos e alcance suas metas financeiras com o PoupaDin
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/signup">
-              <Button size="lg" className="w-full sm:w-auto">
-                Começar gratuitamente
-              </Button>
-            </Link>
-            <Link href="/login">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                Já tenho conta
-              </Button>
-            </Link>
-          </div>
-
-          {/* Features */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
-            <div className="bg-card border rounded-lg p-6 space-y-3">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                <PiggyBank className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-lg font-semibold text-foreground">Controle Total</h3>
-              <p className="text-muted-foreground">
-                Registre receitas e despesas facilmente e tenha visão completa do seu dinheiro
-              </p>
-            </div>
-
-            <div className="bg-card border rounded-lg p-6 space-y-3">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-lg font-semibold text-foreground">Estatísticas</h3>
-              <p className="text-muted-foreground">
-                Visualize gráficos e relatórios para entender seus hábitos financeiros
-              </p>
-            </div>
-
-            <div className="bg-card border rounded-lg p-6 space-y-3">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                <Shield className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-lg font-semibold text-foreground">Segurança</h3>
-              <p className="text-muted-foreground">
-                Seus dados estão protegidos com criptografia de ponta a ponta
-              </p>
-            </div>
-
-            <div className="bg-card border rounded-lg p-6 space-y-3">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                <Smartphone className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-lg font-semibold text-foreground">PWA</h3>
-              <p className="text-muted-foreground">
-                Funciona como app no seu celular, mesmo offline
-              </p>
-            </div>
+      {/* Slides Container */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 pb-8">
+        {/* Icon with gradient background */}
+        <div className="relative mb-8">
+          <div className={`w-32 h-32 rounded-full bg-gradient-to-br ${onboardingSlides[currentSlide].color} flex items-center justify-center shadow-2xl transition-all duration-500 ease-in-out`}>
+            <CurrentIcon className="w-16 h-16 text-white" />
           </div>
         </div>
-      </main>
+
+        {/* Content */}
+        <div className="text-center space-y-4 max-w-md mx-auto transition-all duration-500 ease-in-out">
+          <h2 className="text-3xl font-bold text-foreground">
+            {onboardingSlides[currentSlide].title}
+          </h2>
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            {onboardingSlides[currentSlide].description}
+          </p>
+        </div>
+
+        {/* Dots Indicator */}
+        <div className="flex gap-2 mt-12">
+          {onboardingSlides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`transition-all duration-300 rounded-full ${
+                index === currentSlide
+                  ? "w-8 h-2 bg-foreground"
+                  : "w-2 h-2 bg-muted-foreground/30"
+              }`}
+              aria-label={`Ir para slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom Button */}
+      <div className="p-6 pb-8">
+        <Button
+          size="lg"
+          className="w-full text-lg h-14 rounded-full shadow-lg"
+          onClick={() => router.push("/login")}
+        >
+          Vamos começar
+        </Button>
+        <p className="text-center text-sm text-muted-foreground mt-4">
+          Já tem uma conta?{" "}
+          <button
+            onClick={() => router.push("/login")}
+            className="text-foreground font-semibold underline"
+          >
+            Entrar
+          </button>
+        </p>
+      </div>
     </div>
   )
 }

@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button"
 import { AddRecordModal } from "@/components/add-record-modal"
 import { BottomNav } from "@/components/bottom-nav"
 import { RecordList } from "@/components/record-list"
-import { Plus, Settings } from "lucide-react"
+import { Plus, Settings, Menu } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { Loader2 } from "lucide-react"
 import { Calendar } from "@/components/calendar"
+import { Sidebar } from "@/components/sidebar"
 
 export default function HomePage() {
   const router = useRouter()
@@ -17,6 +18,7 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState("home")
   const [addModalOpen, setAddModalOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState(new Date())
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   // Proteção de rota - redirecionar se não estiver autenticado
   useEffect(() => {
@@ -44,9 +46,18 @@ export default function HomePage() {
       {/* Header */}
       <header className="bg-card border-b sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-foreground">PoupaDin</h1>
-            <p className="text-sm text-muted-foreground">Olá, {user.name}!</p>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Menu className="w-5 h-5" />
+            </Button>
+            <div>
+              <h1 className="text-xl font-bold text-foreground">PoupaDin</h1>
+              <p className="text-sm text-muted-foreground">Olá, {user.name}!</p>
+            </div>
           </div>
           <Button
             variant="ghost"
@@ -102,6 +113,9 @@ export default function HomePage() {
 
       {/* Add Record Modal */}
       <AddRecordModal open={addModalOpen} onClose={() => setAddModalOpen(false)} />
+
+      {/* Sidebar */}
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} user={user} />
     </div>
   )
 }

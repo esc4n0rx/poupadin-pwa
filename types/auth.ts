@@ -1,10 +1,10 @@
-import type { User } from '@supabase/supabase-js'
+// types/auth.ts
 
 export interface AuthUser {
   id: string
   email: string
   name: string
-  created_at: string
+  created_at?: string
 }
 
 export interface AuthContextType {

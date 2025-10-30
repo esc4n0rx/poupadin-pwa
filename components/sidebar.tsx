@@ -3,13 +3,24 @@
 import { X, Download, Database, Trash2, Heart, MessageSquare, Users, Crown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { AuthUser } from "@/types/auth"
 
 interface SidebarProps {
   open: boolean
   onClose: () => void
+  user: AuthUser | null
 }
 
-export function Sidebar({ open, onClose }: SidebarProps) {
+export function Sidebar({ open, onClose, user }: SidebarProps) {
+  // Gera as iniciais do nome do usuário
+  const getInitials = (name: string) => {
+    const names = name.split(' ')
+    if (names.length >= 2) {
+      return `${names[0][0]}${names[1][0]}`.toUpperCase()
+    }
+    return name.substring(0, 2).toUpperCase()
+  }
+
   return (
     <>
       {/* Overlay */}
@@ -36,16 +47,18 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               </Button>
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-sidebar-accent rounded-xl">
-              <Avatar className="w-12 h-12">
-                <AvatarImage src="/placeholder.svg?height=48&width=48" />
-                <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm truncate">João Silva</p>
-                <p className="text-xs text-sidebar-foreground/70 truncate">joao@gmail.com</p>
+            {user && (
+              <div className="flex items-center gap-3 p-3 bg-sidebar-accent rounded-xl">
+                <Avatar className="w-12 h-12">
+                  <AvatarImage src="/placeholder.svg?height=48&width=48" />
+                  <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-sm truncate">{user.name}</p>
+                  <p className="text-xs text-sidebar-foreground/70 truncate">{user.email}</p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Menu Items */}
