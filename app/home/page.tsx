@@ -1,43 +1,65 @@
 "use client"
 
-import { useState } from "react"
-import { Sidebar } from "@/components/sidebar"
-import { Calendar } from "@/components/calendar"
-import { RecordList } from "@/components/record-list"
-import { BottomNav } from "@/components/bottom-nav"
-import { AddRecordModal } from "@/components/add-record-modal"
-import { Menu, Search, Bell, Plus } from "lucide-react"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { AddRecordModal } from "@/components/add-record-modal"
+import { BottomNav } from "@/components/bottom-nav"
+import { RecordList } from "@/components/record-list"
+import { Plus, Settings } from "lucide-react"
+import { useAuth } from "@/hooks/use-auth"
+import { Loader2 } from "lucide-react"
+import { Calendar } from "@/components/calendar"
 
 export default function HomePage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState("records")
+  const router = useRouter()
+  const { user, loading: authLoading, signOut } = useAuth()
+  const [activeTab, setActiveTab] = useState("home")
   const [addModalOpen, setAddModalOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState(new Date())
 
-  return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+  // Proteção de rota - redirecionar se não estiver autenticado
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login")
+    }
+  }, [user, authLoading, router])
 
+  // Loading durante verificação de autenticação
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-foreground" />
+      </div>
+    )
+  }
+
+  // Se não estiver autenticado, não renderizar nada (redirecionamento em andamento)
+  if (!user) {
+    return null
+  }
+
+  return (
+    <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-background border-b border-border">
-        <div className="flex items-center justify-between p-4">
-          <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} className="rounded-xl">
-            <Menu className="w-6 h-6" />
-          </Button>
-          <h1 className="text-xl font-bold">Registros</h1>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="icon" className="rounded-xl">
-              <Search className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="rounded-xl">
-              <Bell className="w-5 h-5" />
-            </Button>
+      <header className="bg-card border-b sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold text-foreground">PoupaDin</h1>
+            <p className="text-sm text-muted-foreground">Olá, {user.name}!</p>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.push("/settings")}
+          >
+            <Settings className="w-5 h-5" />
+          </Button>
         </div>
       </header>
 
       {/* Main Content */}
+     {/* Main Content */}
       <main className="flex-1 overflow-y-auto pb-20">
         <Calendar selectedDate={selectedDate} onSelectDate={setSelectedDate} />
 

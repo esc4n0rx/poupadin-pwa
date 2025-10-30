@@ -1,104 +1,120 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import Link from "next/link"
+import { Loader2, PiggyBank, TrendingUp, Shield, Smartphone } from "lucide-react"
 
-const onboardingSlides = [
-  {
-    title: "Gerencie seu dinheiro",
-    description: "Controle gastos desnecessários e crie hábitos financeiros saudáveis.",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-4URAnQCBzTSO6CEfjMzCkR8vWx2kga.png",
-  },
-  {
-    title: "Notificações em tempo real",
-    description: "Receba alertas quando atingir seus limites de gastos.",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-4URAnQCBzTSO6CEfjMzCkR8vWx2kga.png",
-  },
-  {
-    title: "Acompanhe seus gastos",
-    description: "Analise seus gastos automaticamente através de suas conexões bancárias.",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-4URAnQCBzTSO6CEfjMzCkR8vWx2kga.png",
-  },
-]
-
-export default function OnboardingPage() {
-  const [currentSlide, setCurrentSlide] = useState(0)
+export default function Home() {
   const router = useRouter()
+  const { user, loading } = useAuth()
 
-  const nextSlide = () => {
-    if (currentSlide < onboardingSlides.length - 1) {
-      setCurrentSlide(currentSlide + 1)
+  // Se já estiver autenticado, redirecionar para home
+  useEffect(() => {
+    if (!loading && user) {
+      router.push("/home")
     }
+  }, [user, loading, router])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-foreground" />
+      </div>
+    )
   }
 
-  const prevSlide = () => {
-    if (currentSlide > 0) {
-      setCurrentSlide(currentSlide - 1)
-    }
-  }
-
-  const handleStart = () => {
-    router.push("/login")
+  // Se estiver autenticado, não mostrar nada (redirecionamento em andamento)
+  if (user) {
+    return null
   }
 
   return (
-    <div className="min-h-screen bg-[#FBE6B5] flex flex-col items-center justify-between p-6 pb-12">
-      <div className="w-full max-w-md flex-1 flex flex-col items-center justify-center">
-        <div className="w-full aspect-square max-w-sm mb-12 flex items-center justify-center">
-          <div className="relative w-64 h-64">
-            <img
-              src={`/.jpg?height=256&width=256&query=${onboardingSlides[currentSlide].title}`}
-              alt={onboardingSlides[currentSlide].title}
-              className="w-full h-full object-contain"
-            />
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="container mx-auto px-4 py-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-foreground">PoupaDin</h1>
+        <div className="space-x-2">
+          <Link href="/login">
+            <Button variant="ghost">Entrar</Button>
+          </Link>
+          <Link href="/signup">
+            <Button>Cadastrar</Button>
+          </Link>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <main className="container mx-auto px-4 py-16">
+        <div className="max-w-3xl mx-auto text-center space-y-8">
+          <div className="space-y-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground">
+              Controle suas finanças de forma inteligente
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Gerencie seu dinheiro, acompanhe gastos e alcance suas metas financeiras com o PoupaDin
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/signup">
+              <Button size="lg" className="w-full sm:w-auto">
+                Começar gratuitamente
+              </Button>
+            </Link>
+            <Link href="/login">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto">
+                Já tenho conta
+              </Button>
+            </Link>
+          </div>
+
+          {/* Features */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
+            <div className="bg-card border rounded-lg p-6 space-y-3">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <PiggyBank className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">Controle Total</h3>
+              <p className="text-muted-foreground">
+                Registre receitas e despesas facilmente e tenha visão completa do seu dinheiro
+              </p>
+            </div>
+
+            <div className="bg-card border rounded-lg p-6 space-y-3">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">Estatísticas</h3>
+              <p className="text-muted-foreground">
+                Visualize gráficos e relatórios para entender seus hábitos financeiros
+              </p>
+            </div>
+
+            <div className="bg-card border rounded-lg p-6 space-y-3">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <Shield className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">Segurança</h3>
+              <p className="text-muted-foreground">
+                Seus dados estão protegidos com criptografia de ponta a ponta
+              </p>
+            </div>
+
+            <div className="bg-card border rounded-lg p-6 space-y-3">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <Smartphone className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">PWA</h3>
+              <p className="text-muted-foreground">
+                Funciona como app no seu celular, mesmo offline
+              </p>
+            </div>
           </div>
         </div>
-
-        <div className="text-center space-y-4 mb-8">
-          <h1 className="text-3xl font-bold text-foreground text-balance">{onboardingSlides[currentSlide].title}</h1>
-          <p className="text-base text-muted-foreground leading-relaxed text-pretty max-w-sm mx-auto">
-            {onboardingSlides[currentSlide].description}
-          </p>
-        </div>
-
-        <div className="flex gap-2 mb-12">
-          {onboardingSlides.map((_, index) => (
-            <div
-              key={index}
-              className={`h-2 rounded-full transition-all ${
-                index === currentSlide ? "w-8 bg-foreground" : "w-2 bg-foreground/30"
-              }`}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="w-full max-w-md space-y-4">
-        <Button
-          onClick={handleStart}
-          className="w-full h-14 text-base font-medium rounded-2xl bg-foreground text-background hover:bg-foreground/90"
-        >
-          Começar
-        </Button>
-
-        {currentSlide < onboardingSlides.length - 1 && (
-          <div className="flex gap-2">
-            <Button
-              onClick={prevSlide}
-              variant="ghost"
-              className="flex-1 h-12 rounded-2xl"
-              disabled={currentSlide === 0}
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
-            <Button onClick={nextSlide} variant="ghost" className="flex-1 h-12 rounded-2xl">
-              <ChevronRight className="w-5 h-5" />
-            </Button>
-          </div>
-        )}
-      </div>
+      </main>
     </div>
   )
 }
